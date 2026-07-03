@@ -14,14 +14,16 @@ import {
   FiLock,
   FiMail,
   FiSend,
-  FiCheckCircle
+  FiCheckCircle,
+  FiSave,
+  FiEdit2
 } from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const Settings = () => {
-  const { user, logout } = useAuth();
+  const { user, userData, logout, updateUserData } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -35,6 +37,8 @@ const Settings = () => {
 
   const [languageChanged, setLanguageChanged] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isEditingShop, setIsEditingShop] = useState(false);
+  const [shopName, setShopName] = useState(userData?.shopName || '');
   
   // Password Change State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -57,15 +61,15 @@ const Settings = () => {
 
   // Load notification settings from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('spazex_notifications');
+    const saved = localStorage.getItem(`spazex_notifications_${user?.uid}`);
     if (saved) {
       setNotifications(JSON.parse(saved));
     }
-  }, []);
+  }, [user]);
 
   // Save notification settings to localStorage
   const saveNotificationSettings = () => {
-    localStorage.setItem('spazex_notifications', JSON.stringify(notifications));
+    localStorage.setItem(`spazex_notifications_${user?.uid}`, JSON.stringify(notifications));
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
   };
@@ -93,6 +97,20 @@ const Settings = () => {
     }
   };
 
+  const handleShopNameUpdate = async () => {
+    if (shopName.trim()) {
+      try {
+        await updateUserData({ shopName: shopName.trim() });
+        setIsEditingShop(false);
+        // Show success message
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } catch (error) {
+        console.error('Error updating shop name:', error);
+      }
+    }
+  };
+
   // Password Change Handlers
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -103,7 +121,6 @@ const Settings = () => {
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
     
-    // Validation
     if (passwordData.newPassword.length < 6) {
       setPasswordError('New password must be at least 6 characters');
       return;
@@ -114,7 +131,6 @@ const Settings = () => {
       return;
     }
     
-    // Simulate password change
     setPasswordSuccess(true);
     setTimeout(() => {
       setPasswordSuccess(false);
@@ -161,14 +177,58 @@ const Settings = () => {
       <div className="bg-gradient-to-r from-[#C4D9FF] to-[#C5BAFE] rounded-2xl p-6 mb-8">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center text-2xl font-bold text-gray-800">
-            {user?.displayName?.[0]?.toUpperCase() || 'U'}
+            {userData?.displayName?.[0]?.toUpperCase() || user?.displayName?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-800">{user?.displayName || 'User'}</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              {userData?.displayName || user?.displayName || 'User'}
+            </h2>
             <p className="text-gray-700">{user?.email}</p>
-            {user?.shopName && (
-              <p className="text-sm text-gray-700 mt-1">🏪 {user.shopName}</p>
-            )}
+            <div className="flex items-center gap-2 mt-1">
+              {isEditingShop ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={shopName}
+                    onChange={(e) => setShopName(e.target.value)}
+                    className="bg-white/50 px-3 py-1 rounded-lg text-sm text-gray-800 outline-none focus:ring-2 focus:ring-white/50"
+                    placeholder="Enter shop name"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleShopNameUpdate}
+                    className="bg-white/30 hover:bg-white/50 px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                  >
+                    <FiCheck className="w-4 h-4" /> Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditingShop(false);
+                      setShopName(userData?.shopName || '');
+                    }}
+                    className="bg-white/30 hover:bg-white/50 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-700">
+                    {userData?.shopName ? `🏪 ${userData.shopName}` : 'No shop name set'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setIsEditingShop(true);
+                      setShopName(userData?.shopName || '');
+                    }}
+                    className="text-gray-600 hover:text-gray-800 transition-colors"
+                    title="Edit shop name"
+                  >
+                    <FiEdit2 className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <Link 
             to="/profile"
@@ -252,21 +312,6 @@ const Settings = () => {
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                     notifications.salesAlerts ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </label>
-            <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-sm text-gray-700">Weekly Reports</span>
-              <button
-                onClick={() => handleNotificationToggle('weeklyReport')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  notifications.weeklyReport ? 'bg-blue-600' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    notifications.weeklyReport ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
               </button>

@@ -1,33 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiSave, FiUser, FiMail, FiBriefcase, FiSmartphone, FiCheck } from 'react-icons/fi';
+import { 
+  FiArrowLeft, 
+  FiSave, 
+  FiUser, 
+  FiMail, 
+  FiBriefcase, 
+  FiSmartphone,
+  FiCheck,
+  FiMapPin
+} from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, userData, updateUserData } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    shopName: user?.shopName || '',
+    displayName: '',
+    email: '',
+    shopName: '',
     phone: '',
     address: ''
   });
-  const [saved, setSaved] = useState(false);
+
+  // Load user data when component mounts
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        displayName: userData.displayName || user?.displayName || '',
+        email: userData.email || user?.email || '',
+        shopName: userData.shopName || '',
+        phone: userData.phone || '',
+        address: userData.address || ''
+      });
+    } else if (user) {
+      setFormData({
+        displayName: user.displayName || '',
+        email: user.email || '',
+        shopName: '',
+        phone: '',
+        address: ''
+      });
+    }
+  }, [user, userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save profile logic here
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-    // Update user in localStorage
-    const updatedUser = { ...user, ...formData };
-    localStorage.setItem('spazex_user', JSON.stringify(updatedUser));
+    setLoading(true);
+    
+    try {
+      await updateUserData({
+        displayName: formData.displayName,
+        shopName: formData.shopName,
+        phone: formData.phone,
+        address: formData.address
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,9 +136,10 @@ const Profile = () => {
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
                 placeholder="Enter your email"
-                required
+                disabled
               />
             </div>
+            <p className="mt-1 text-xs text-gray-400">Email cannot be changed</p>
           </div>
 
           <div>
@@ -138,14 +180,17 @@ const Profile = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Shop Address
             </label>
-            <textarea
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              rows="3"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
-              placeholder="Enter your shop address"
-            />
+            <div className="relative">
+              <FiMapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+              <textarea
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                rows="3"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                placeholder="Enter your shop address"
+              />
+            </div>
           </div>
         </div>
 
@@ -153,10 +198,11 @@ const Profile = () => {
         <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-8 border-t border-gray-100">
           <button
             type="submit"
-            className="flex-1 bg-[#1E293B] text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center justify-center gap-2"
+            disabled={loading}
+            className="flex-1 bg-[#1E293B] text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <FiSave className="w-5 h-5" />
-            Save Changes
+            {loading ? 'Saving...' : 'Save Changes'}
           </button>
           <Link
             to="/settings"
