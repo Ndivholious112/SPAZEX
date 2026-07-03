@@ -1,7 +1,6 @@
 package com.shaper.hackathon.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,21 +9,28 @@ import lombok.ToString;
 @Setter
 @ToString(exclude = "shop")
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "suppliers")
+public class Supplier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
+    @Column(name = "supplier_id")
+    private Integer supplierId;
 
-    @NotBlank(message = "Username is required")
-    @Column(nullable = false, unique = true, length = 100)
-    private String username;
+    @Column(name = "supplier_name", nullable = false, length = 150)
+    private String supplierName;
 
-    @NotBlank(message = "Password is required")
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "contact_person", length = 100)
+    private String contactPerson;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 150)
+    private String email;
+
+    @Column(length = 255)
+    private String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
@@ -36,11 +42,11 @@ public class User {
             return true;
         }
 
-        if (!(o instanceof User user)) {
+        if (!(o instanceof Supplier supplier)) {
             return false;
         }
 
-        return id != null && id.equals(user.id);
+        return supplierId != null && supplierId.equals(supplier.supplierId);
     }
 
     @Override
