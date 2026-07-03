@@ -93,17 +93,15 @@ const Sales = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <SalesChart data={chartData} />
-            <div>
-              <ActionCenter alerts={alerts} boosters={boosters} />
-            </div>
+            <SalesPieChart items={topSellers} />
           </div>
 
           <SalesTable rows={rows} />
         </div>
 
         <div className="space-y-6">
-          <SalesPieChart items={topSellers} />
           <TopSellers items={topSellers} />
+          <ActionCenter alerts={alerts} boosters={boosters} />
         </div>
       </div>
 

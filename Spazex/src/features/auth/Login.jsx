@@ -27,7 +27,7 @@ const Login = () => {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
+          <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
           <p className="text-gray-600 mt-2">Sign in to your Spazex account</p>
         </div>
 
