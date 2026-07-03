@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(true);
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -31,9 +32,7 @@ const Navbar = () => {
   // Navigation items for authenticated users
   const authenticatedNavItems = [
     { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
-    { path: '/inventory', icon: FiPackage, label: 'Inventory' },
-    { path: '/sales', icon: FiTrendingUp, label: 'Sales' },
-    { path: '/forecast', icon: FiBarChart2, label: 'Forecast' },
+    { path: '/inventory', icon: FiPackage, label: 'Products' },
     { path: '/ai-coach', icon: FiCpu, label: 'AI Coach' },
     { path: '/suppliers', icon: FiTruck, label: 'Suppliers' },
   ];
@@ -60,19 +59,9 @@ const Navbar = () => {
             <span className="text-2xl font-bold text-gray-800 tracking-tight">Spazex</span>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu: navigation moved to Sidebar */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link 
-                key={item.path}
-                to={item.path} 
-                className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group flex items-center gap-2"
-              >
-                {item.icon && <item.icon className="w-4 h-4" />}
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C4D9FF] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            ))}
+            {/* Navigation links moved to the Sidebar component for desktop layouts */}
           </div>
 
           {/* Desktop CTA / User Menu */}
@@ -194,6 +183,35 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+
+          {/* Analytics group for mobile */}
+          <div>
+            <button
+              onClick={() => setAnalyticsOpen(!analyticsOpen)}
+              className="w-full flex items-center justify-between gap-3 text-gray-700 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <span className="flex items-center gap-3">
+                <FiTrendingUp className="w-5 h-5" />
+                Analytics
+              </span>
+              <svg className={`w-4 h-4 transform transition-transform ${analyticsOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+              </svg>
+            </button>
+
+            {analyticsOpen && (
+              <div className="mt-2 pl-4 flex flex-col">
+                <Link to="/sales" onClick={closeMobileMenu} className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  <FiTrendingUp className="w-5 h-5" />
+                  Sales
+                </Link>
+                <Link to="/forecast" onClick={closeMobileMenu} className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  <FiBarChart2 className="w-5 h-5" />
+                  Forecast
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Additional links for authenticated users */}
           {isAuthenticated && (
