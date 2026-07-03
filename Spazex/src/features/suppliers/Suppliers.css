@@ -82,6 +82,29 @@
   box-shadow: 0 0 0 4px rgba(196, 217, 255, 0.25);
 }
 
+.spx-suppliers .comparison-table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.spx-suppliers .comparison-table th,
+.spx-suppliers .comparison-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.spx-suppliers .comparison-table th {
+  color: #475569;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.spx-suppliers .comparison-row:hover {
+  background: #F8FAFC;
+}
+
 @media (max-width: 1024px) {
   .spx-suppliers .grid-cols-1\@lg\:grid-cols-\[2fr_1fr\] {
     grid-template-columns: 1fr;

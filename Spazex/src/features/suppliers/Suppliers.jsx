@@ -3,13 +3,13 @@ import './Suppliers.css';
 
 const communityDirectory = {
   'Soweto, Orlando West': [
-    { name: 'Orlando Cash & Carry', phone: '011 123 4567', rating: 4.8, note: 'Fast delivery on staple goods' },
-    { name: 'Soweto Wholesale Depot', phone: '011 234 8910', rating: 4.6, note: 'Good for bread and milk stock' },
-    { name: 'Mzanzi Foods', phone: '011 345 6789', rating: 4.5, note: 'Trusted by local spaza shops' },
+    { name: 'Orlando Cash & Carry', phone: '011 123 4567', rating: 4.8, price: 'R11.50/unit', delivery: '1-2 days', moq: '20 units', trustScore: '95%', note: 'Fast delivery on staple goods' },
+    { name: 'Soweto Wholesale Depot', phone: '011 234 8910', rating: 4.6, price: 'R10.90/unit', delivery: '2-3 days', moq: '30 units', trustScore: '92%', note: 'Good for bread and milk stock' },
+    { name: 'Mzanzi Foods', phone: '011 345 6789', rating: 4.5, price: 'R12.00/unit', delivery: '1-2 days', moq: '15 units', trustScore: '90%', note: 'Trusted by local spaza shops' },
   ],
   default: [
-    { name: 'Local Stock Partner', phone: '011 987 6543', rating: 4.4, note: 'Verified supplier network' },
-    { name: 'Reliable Wholesaler', phone: '011 876 5432', rating: 4.3, note: 'Order basics with a single tap' },
+    { name: 'Local Stock Partner', phone: '011 987 6543', rating: 4.4, price: 'R11.80/unit', delivery: '2-4 days', moq: '25 units', trustScore: '89%', note: 'Verified supplier network' },
+    { name: 'Reliable Wholesaler', phone: '011 876 5432', rating: 4.3, price: 'R11.20/unit', delivery: '3-4 days', moq: '20 units', trustScore: '88%', note: 'Order basics with a single tap' },
   ],
 };
 
@@ -18,6 +18,17 @@ const Suppliers = () => {
   const [communitySuppliers, setCommunitySuppliers] = useState([]);
   const [personalSuppliers, setPersonalSuppliers] = useState([]);
   const [newSupplier, setNewSupplier] = useState({ name: '', phone: '' });
+
+  const comparisonItems = [
+    ...communitySuppliers,
+    ...personalSuppliers.map((supplier) => ({
+      ...supplier,
+      price: 'TBD',
+      delivery: '1-3 days',
+      moq: 'N/A',
+      trustScore: 'New',
+    })),
+  ];
 
   useEffect(() => {
     setCommunitySuppliers(communityDirectory[location] || communityDirectory.default);
@@ -67,6 +78,44 @@ const Suppliers = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+
+          <section className="card p-6">
+            <div className="section-header">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Supplier Comparison</h2>
+                <p className="text-gray-600 mt-1">Compare price, delivery, trust score, and minimum order at a glance.</p>
+              </div>
+              <span className="badge">At a glance</span>
+            </div>
+
+            <div className="mt-6 overflow-x-auto">
+              <table className="comparison-table w-full">
+                <thead>
+                  <tr>
+                    <th>Supplier</th>
+                    <th>Price</th>
+                    <th>Delivery</th>
+                    <th>Trust</th>
+                    <th>MOQ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonItems.map((supplier) => (
+                    <tr key={supplier.name} className="comparison-row">
+                      <td>
+                        <p className="font-semibold text-gray-900">{supplier.name}</p>
+                        <p className="text-sm text-gray-600">{supplier.note || 'Personal supplier'}</p>
+                      </td>
+                      <td>{supplier.price}</td>
+                      <td>{supplier.delivery}</td>
+                      <td>{supplier.trustScore}</td>
+                      <td>{supplier.moq}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
 

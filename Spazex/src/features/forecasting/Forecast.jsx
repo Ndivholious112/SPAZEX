@@ -8,42 +8,45 @@ import ForecastSuggestions from './components/ForecastSuggestions';
 import { formatCurrency } from '../../utils/formatters';
 import WhatsAppFab from '../sales/components/WhatsAppFab';
 
+const defaultHistory = [
+  { label: 'Mon', value: 80 },
+  { label: 'Tue', value: 90 },
+  { label: 'Wed', value: 70 },
+  { label: 'Thu', value: 100 },
+  { label: 'Fri', value: 120 },
+  { label: 'Sat', value: 150 },
+  { label: 'Sun', value: 110 },
+];
+
+const defaultForecast = [
+  { label: 'Mon', value: 95 },
+  { label: 'Tue', value: 100 },
+  { label: 'Wed', value: 90 },
+  { label: 'Thu', value: 110 },
+  { label: 'Fri', value: 130 },
+  { label: 'Sat', value: 160 },
+  { label: 'Sun', value: 120 },
+];
+
+const defaultRows = [
+  { id: 1, name: 'Bread', predicted: 40, price: 20.0, suggestOrder: 20 },
+  { id: 2, name: 'Milk', predicted: 30, price: 15.0, suggestOrder: 10 },
+  { id: 3, name: 'Eggs', predicted: 25, price: 12.0, suggestOrder: 15 },
+];
+
+const defaultSuggestions = [
+  { title: 'Order Bread', text: 'Predicted demand is high for bread on Friday and Saturday. Order more stock.' },
+  { title: 'Staffing', text: 'Consider extra staff on Saturday (predicted peak).' },
+];
+
 const Forecast = () => {
   const [loading, setLoading] = React.useState(true);
-
-  const history = [
-    { label: 'Mon', value: 80 },
-    { label: 'Tue', value: 90 },
-    { label: 'Wed', value: 70 },
-    { label: 'Thu', value: 100 },
-    { label: 'Fri', value: 120 },
-    { label: 'Sat', value: 150 },
-    { label: 'Sun', value: 110 },
-  ];
-
-  const forecast = [
-    { label: 'Mon', value: 95 },
-    { label: 'Tue', value: 100 },
-    { label: 'Wed', value: 90 },
-    { label: 'Thu', value: 110 },
-    { label: 'Fri', value: 130 },
-    { label: 'Sat', value: 160 },
-    { label: 'Sun', value: 120 },
-  ];
-
-  const rows = [
-    { id: 1, name: 'Bread', predicted: 40, price: 20.0, suggestOrder: 20 },
-    { id: 2, name: 'Milk', predicted: 30, price: 15.0, suggestOrder: 10 },
-    { id: 3, name: 'Eggs', predicted: 25, price: 12.0, suggestOrder: 15 },
-  ];
-
-  const suggestions = [
-    { title: 'Order Bread', text: 'Predicted demand is high for bread on Friday and Saturday. Order more stock.' },
-    { title: 'Staffing', text: 'Consider extra staff on Saturday (predicted peak).' },
-  ];
+  const [history] = React.useState(defaultHistory);
+  const [forecast] = React.useState(defaultForecast);
+  const [rows, setRows] = React.useState(defaultRows);
+  const [suggestions] = React.useState(defaultSuggestions);
 
   React.useEffect(() => {
-    // load cached rows/forecast if present
     try {
       const cachedRows = localStorage.getItem('forecastRows');
       if (cachedRows) setRows(JSON.parse(cachedRows));

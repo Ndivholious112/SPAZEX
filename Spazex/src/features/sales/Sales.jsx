@@ -54,6 +54,10 @@ const Sales = () => {
     try { localStorage.setItem('salesRows', JSON.stringify(rows)); } catch (e) {}
   }, [rows]);
 
+  React.useEffect(() => {
+    try { localStorage.setItem('salesChart', JSON.stringify(chartData)); } catch (e) {}
+  }, [chartData]);
+
   const total = rows.reduce((s, r) => s + r.amount, 0);
   const stats = {
     today: formatCurrency(total),
