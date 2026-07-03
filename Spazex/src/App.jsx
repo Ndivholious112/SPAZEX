@@ -37,6 +37,7 @@ import ForgotPassword from './features/auth/ForgotPassword';
 import Dashboard from './features/dashboard/Dashboard';
 import Inventory from './features/inventory/Inventory';
 import Sales from './features/sales/Sales';
+import Invoices from './features/invoices/Invoices';
 import Forecast from './features/forecasting/Forecast';
 import AICoach from './features/ai-coach/AICoach';
 import Suppliers from './features/suppliers/Suppliers';
@@ -340,6 +341,7 @@ const protectedPaths = [
   '/dashboard',
   '/inventory',
   '/sales',
+  '/invoices',
   '/forecast',
   '/ai-coach',
   '/suppliers',
@@ -433,7 +435,7 @@ function App() {
             </MainLayout>
           } />
 
-          {/* Protected Routes - With Navbar, Sidebar, and Footer */}
+          {/* Protected Routes - With Navbar, Sidebar (via protectedPaths match), and Footer */}
           <Route path="/dashboard" element={
             <MainLayout>
               <Dashboard />
@@ -447,6 +449,11 @@ function App() {
           <Route path="/sales" element={
             <MainLayout>
               <Sales />
+            </MainLayout>
+          } />
+          <Route path="/invoices" element={
+            <MainLayout>
+              <Invoices />
             </MainLayout>
           } />
           <Route path="/forecast" element={
