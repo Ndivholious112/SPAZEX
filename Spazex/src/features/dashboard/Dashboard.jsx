@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiCheck, FiCreditCard, FiDollarSign } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiCheck, FiCreditCard, FiDollarSign, FiArrowUpRight, FiPackage, FiAlertTriangle, FiShield } from 'react-icons/fi';
 
 const PRODUCTS = [
-  { id: 1, name: 'Fresh and Healthy Salad', price: 2.65 },
-  { id: 2, name: 'Cashew Nut Chicken Salad', price: 2.65 },
-  { id: 3, name: 'Crunchy Cashew Salad', price: 2.65 },
-  { id: 4, name: 'Sesame Dressing Salad', price: 2.65 },
+  { id: 1, name: 'Maggi 2-Minute Noodles (Chicken)', price: 9.5 },
+  { id: 2, name: 'Tastic Rice 2kg', price: 89.99 },
+  { id: 3, name: 'Parmalat Full Cream Milk 1L', price: 29.9 },
+  { id: 4, name: 'Crosse & Blackwell Baked Beans 410g', price: 27.5 },
 ];
 
 const FIXED_DISCOUNT = 1.0;
@@ -307,6 +307,64 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      <div className="mt-10 mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-500">Total Revenue</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-3">R68 400</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+              <FiArrowUpRight className="w-4 h-4" />
+              +14%
+            </span>
+          </div>
+          <p className="mt-4 text-xs text-gray-400">Daily spaza sales across maize, noodles, milk and beans.</p>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-500">Total Orders</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-3">124</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
+              <FiPackage className="w-4 h-4" />
+              Live
+            </span>
+          </div>
+          <p className="mt-4 text-xs text-gray-400">Orders being fulfilled from the spaza counter and takeaway window.</p>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-500">Low Stock Items</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-3">4</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+              <FiAlertTriangle className="w-4 h-4" />
+              Urgent
+            </span>
+          </div>
+          <p className="mt-4 text-xs text-gray-400">Maize meal, soap and tea running low — restock the shelves quickly.</p>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-500">Profit Margin</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-3">26%</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+              <FiShield className="w-4 h-4" />
+              Solid
+            </span>
+          </div>
+          <p className="mt-4 text-xs text-gray-400">Strong margin on everyday essentials for the neighborhood shop.</p>
+        </div>
+      </div>
 
       {/* Main Catalog Grid */}
       <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
