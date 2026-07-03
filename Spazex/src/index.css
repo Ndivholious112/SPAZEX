@@ -1,5 +1,34 @@
 @import "tailwindcss";
 
+@layer base {
+  body {
+    @apply bg-[#FBFBFB] text-[#1E293B] antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Floating animation for phone mockup */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Selection style */
+::selection {
+  background-color: #C4D9FF;
+  color: white;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
 	--spx-bg: #FBFBFB; /* rgb(251, 251, 251) */
 	--spx-accent-1: #E8F9FF; /* rgb(232, 249, 255) */
