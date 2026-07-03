@@ -1,45 +1,178 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiArrowLeft, FiSave, FiUser, FiMail, FiBriefcase, FiSmartphone, FiCheck } from 'react-icons/fi';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Profile = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    displayName: user?.displayName || '',
+    email: user?.email || '',
+    shopName: user?.shopName || '',
+    phone: '',
+    address: ''
+  });
+  const [saved, setSaved] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Save profile logic here
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+    // Update user in localStorage
+    const updatedUser = { ...user, ...formData };
+    localStorage.setItem('spazex_user', JSON.stringify(updatedUser));
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-center gap-4 mb-6">
-        <Link to="/settings" className="text-gray-500 hover:text-gray-700 transition-colors">
-          ← Back to Settings
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <Link 
+          to="/settings" 
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <FiArrowLeft className="w-5 h-5 text-gray-600" />
         </Link>
-        <h1 className="text-3xl font-bold text-gray-800">Profile</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Edit Profile</h1>
+          <p className="text-gray-600 mt-1">Update your personal information</p>
+        </div>
       </div>
-      
-      <div className="max-w-2xl bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-20 h-20 rounded-full bg-[#C4D9FF] flex items-center justify-center text-3xl font-bold text-gray-800">
-            JD
+
+      {/* Profile Form */}
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 border border-gray-100">
+        {/* Avatar Section */}
+        <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-100">
+          <div className="w-24 h-24 bg-gradient-to-r from-[#C4D9FF] to-[#C5BAFE] rounded-full flex items-center justify-center text-3xl font-bold text-gray-800">
+            {formData.displayName?.[0]?.toUpperCase() || 'U'}
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">John Doe</h2>
-            <p className="text-gray-600">john@example.com</p>
+            <h3 className="text-lg font-semibold text-gray-800">Profile Photo</h3>
+            <p className="text-sm text-gray-500 mt-1">Upload a new photo or change your avatar</p>
+            <button type="button" className="mt-2 text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors">
+              Change Photo
+            </button>
           </div>
         </div>
-        
-        <div className="space-y-4">
+
+        {/* Form Fields */}
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input type="text" value="John Doe" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readOnly />
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name *
+            </label>
+            <div className="relative">
+              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                name="displayName"
+                value={formData.displayName}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" value="john@example.com" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readOnly />
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address *
+            </label>
+            <div className="relative">
+              <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-            <input type="text" value="John's Spaza Shop" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readOnly />
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Shop Name
+            </label>
+            <div className="relative">
+              <FiBriefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                name="shopName"
+                value={formData.shopName}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                placeholder="Enter your shop name"
+              />
+            </div>
           </div>
-          <button className="mt-4 bg-[#C4D9FF] text-gray-800 px-6 py-2 rounded-lg font-semibold hover:bg-[#C5BAFE] transition-all">
-            Edit Profile
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
+            <div className="relative">
+              <FiSmartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                placeholder="Enter your phone number"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Shop Address
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              rows="3"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+              placeholder="Enter your shop address"
+            />
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-8 border-t border-gray-100">
+          <button
+            type="submit"
+            className="flex-1 bg-[#1E293B] text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <FiSave className="w-5 h-5" />
+            Save Changes
           </button>
+          <Link
+            to="/settings"
+            className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300 text-center"
+          >
+            Cancel
+          </Link>
         </div>
-      </div>
+
+        {saved && (
+          <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-2 text-green-700">
+            <FiCheck className="w-5 h-5" />
+            Profile updated successfully!
+          </div>
+        )}
+      </form>
     </div>
   );
 };

@@ -30,15 +30,30 @@ html {
 }
 
 :root {
-	--spx-bg: #FBFBFB; /* rgb(251, 251, 251) */
-	--spx-accent-1: #E8F9FF; /* rgb(232, 249, 255) */
-	--spx-accent-2: #C4D9FF; /* rgb(196, 217, 255) */
-	--spx-accent-3: #C5BAFF; /* rgb(197, 186, 255) */
+  --spx-bg: #FBFBFB;
+  --spx-accent-1: #E8F9FF;
+  --spx-accent-2: #C4D9FF;
+  --spx-accent-3: #C5BAFF;
+  
+  /* Dark mode variables */
+  --spx-bg-dark: #1a1a2e;
+  --spx-surface-dark: #16213e;
+  --spx-surface-hover-dark: #1f2a4a;
+  --spx-border-dark: #374151;
+  
+  /* Typography */
+  --spx-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --spx-heading-color: #1f2937;
+  --spx-body-color: #374151;
+  --spx-heading-color-dark: #e2e8f0;
+  --spx-body-color-dark: #cbd5e1;
+}
 
-	/* Typography */
-	--spx-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-	--spx-heading-color: #1f2937; /* gray-800 */
-	--spx-body-color: #374151; /* gray-700 */
+/* Dark mode root variables */
+.dark {
+  --spx-bg: #1a1a2e;
+  --spx-heading-color: #e2e8f0;
+  --spx-body-color: #cbd5e1;
 }
 
 /* Utility classes for shared colors */
@@ -52,21 +67,329 @@ html {
 
 /* Base fonts */
 html, body {
-	font-family: var(--spx-font-family);
-	color: var(--spx-body-color);
-	background-color: var(--spx-bg);
+  font-family: var(--spx-font-family);
+  color: var(--spx-body-color);
+  background-color: var(--spx-bg);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Consistent headings for the app */
-/* Use clamp for responsive scaling on small screens */
-h1, .spx-h1 { font-size: clamp(1.5rem, 2.6vw, 2.25rem); line-height: 1.05; font-weight: 700; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
-h2, .spx-h2 { font-size: clamp(1.25rem, 2.1vw, 1.75rem); line-height: 1.1; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
-h3, .spx-h3 { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.15; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
-h4, .spx-h4 { font-size: clamp(0.95rem, 1.2vw, 1rem); line-height: 1.2; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.4rem 0; }
+h1, .spx-h1 { 
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem); 
+  line-height: 1.05; 
+  font-weight: 700; 
+  color: var(--spx-heading-color); 
+  margin: 0 0 0.5rem 0; 
+}
+h2, .spx-h2 { 
+  font-size: clamp(1.25rem, 2.1vw, 1.75rem); 
+  line-height: 1.1; 
+  font-weight: 600; 
+  color: var(--spx-heading-color); 
+  margin: 0 0 0.5rem 0; 
+}
+h3, .spx-h3 { 
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem); 
+  line-height: 1.15; 
+  font-weight: 600; 
+  color: var(--spx-heading-color); 
+  margin: 0 0 0.5rem 0; 
+}
+h4, .spx-h4 { 
+  font-size: clamp(0.95rem, 1.2vw, 1rem); 
+  line-height: 1.2; 
+  font-weight: 600; 
+  color: var(--spx-heading-color); 
+  margin: 0 0 0.4rem 0; 
+}
 
-/* Small utility to apply consistent heading style when components use custom tags */
-.spx-heading { color: var(--spx-heading-color); font-family: var(--spx-font-family); }
+/* Small utility to apply consistent heading style */
+.spx-heading { 
+  color: var(--spx-heading-color); 
+  font-family: var(--spx-font-family); 
+}
 
 /* Ensure headings don't break on small screens */
-h1, h2, h3, h4 { word-break: break-word; }
+h1, h2, h3, h4 { 
+  word-break: break-word; 
+}
 
+/* ===== DARK MODE STYLES ===== */
+
+/* Dark mode background overrides */
+.dark .bg-white {
+  background-color: var(--spx-surface-dark);
+}
+.dark .bg-gray-50 {
+  background-color: var(--spx-bg-dark);
+}
+.dark .bg-gray-100 {
+  background-color: var(--spx-surface-hover-dark);
+}
+.dark .bg-gray-50\/50 {
+  background-color: rgba(26, 26, 46, 0.5);
+}
+
+/* Dark mode border overrides */
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: var(--spx-border-dark);
+}
+
+/* Dark mode text overrides */
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--spx-heading-color-dark);
+}
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: var(--spx-body-color-dark);
+}
+.dark .text-gray-700 {
+  color: #e2e8f0;
+}
+.dark .text-gray-400 {
+  color: #94a3b8;
+}
+
+/* Dark mode input styles */
+.dark input,
+.dark select,
+.dark textarea,
+.dark .input-field {
+  background-color: var(--spx-bg-dark);
+  border-color: var(--spx-border-dark);
+  color: var(--spx-heading-color-dark);
+}
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: var(--spx-accent-2);
+  ring-color: var(--spx-accent-2);
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b;
+}
+
+/* Dark mode table styles */
+.dark .bg-gray-50 {
+  background-color: var(--spx-bg-dark);
+}
+.dark .divide-gray-100,
+.dark .divide-gray-50 {
+  border-color: var(--spx-border-dark);
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--spx-surface-hover-dark);
+}
+.dark .hover\:bg-gray-100:hover {
+  background-color: var(--spx-surface-hover-dark);
+}
+
+/* Dark mode card hover */
+.dark .hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode gradient backgrounds */
+.dark .bg-gradient-to-r.from-\[\#C4D9FF\]\\.to-\[\#C5BAFE\] {
+  background-image: linear-gradient(to right, #2d3748, #4a5568);
+}
+
+/* Dark mode modal */
+.dark .fixed.inset-0.bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.dark .bg-white.rounded-3xl,
+.dark .bg-white.rounded-2xl,
+.dark .bg-white.rounded-xl {
+  background-color: var(--spx-surface-dark);
+  border-color: var(--spx-border-dark);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+  background-color: var(--spx-bg-dark);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #4a5568;
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+
+/* Dark mode selection */
+.dark ::selection {
+  background-color: #4a5568;
+  color: white;
+}
+
+/* Dark mode table row hover */
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--spx-surface-hover-dark);
+}
+
+/* Dark mode stats cards */
+.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.15);
+}
+.dark .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+.dark .bg-green-50 {
+  background-color: rgba(34, 197, 94, 0.15);
+}
+.dark .bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.15);
+}
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.15);
+}
+
+/* Dark mode status badges */
+.dark .bg-red-100 {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+.dark .bg-orange-100 {
+  background-color: rgba(249, 115, 22, 0.2);
+}
+.dark .bg-yellow-100 {
+  background-color: rgba(234, 179, 8, 0.2);
+}
+.dark .bg-green-100 {
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark .text-red-600 {
+  color: #f87171;
+}
+.dark .text-red-700 {
+  color: #fca5a5;
+}
+.dark .text-orange-600 {
+  color: #fb923c;
+}
+.dark .text-yellow-700 {
+  color: #fcd34d;
+}
+.dark .text-green-600 {
+  color: #4ade80;
+}
+.dark .text-blue-600 {
+  color: #60a5fa;
+}
+.dark .text-purple-600 {
+  color: #a78bfa;
+}
+
+/* Dark mode AI panel */
+.dark .bg-\[\#1E293B\] {
+  background-color: #0f172a;
+}
+.dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.dark .hover\:bg-white\/15:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode footer */
+.dark .bg-gray-50 {
+  background-color: var(--spx-bg-dark);
+}
+.dark .border-gray-100 {
+  border-color: var(--spx-border-dark);
+}
+.dark .text-gray-500 {
+  color: #94a3b8;
+}
+
+/* Dark mode sidebar */
+.dark .bg-white {
+  background-color: var(--spx-surface-dark);
+}
+.dark .border-r {
+  border-color: var(--spx-border-dark);
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--spx-surface-hover-dark);
+}
+
+/* Dark mode navbar */
+.dark .bg-\[\#FBFBFB\] {
+  background-color: var(--spx-bg-dark);
+}
+.dark .border-b {
+  border-color: var(--spx-border-dark);
+}
+.dark .text-gray-600 {
+  color: var(--spx-body-color-dark);
+}
+.dark .hover\:text-blue-600:hover {
+  color: #60a5fa;
+}
+
+/* Dark mode dropdown menus */
+.dark .bg-white.rounded-xl.shadow-lg {
+  background-color: var(--spx-surface-dark);
+  border-color: var(--spx-border-dark);
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--spx-surface-hover-dark);
+}
+.dark .border-gray-100 {
+  border-color: var(--spx-border-dark);
+}
+
+/* Dark mode links */
+.dark a:not(.text-blue-600):not(.text-white) {
+  color: var(--spx-body-color-dark);
+}
+.dark a:not(.text-blue-600):not(.text-white):hover {
+  color: #e2e8f0;
+}
+
+/* Dark mode buttons */
+.dark .bg-\[\#1E293B\] {
+  background-color: #0f172a;
+}
+.dark .bg-\[\#1E293B\]:hover {
+  background-color: #1e293b;
+}
+.dark .bg-gray-100 {
+  background-color: var(--spx-surface-hover-dark);
+}
+.dark .bg-gray-100:hover {
+  background-color: #2d3748;
+}
+.dark .text-gray-700 {
+  color: var(--spx-body-color-dark);
+}
+.dark .hover\:text-gray-800:hover {
+  color: #e2e8f0;
+}
+
+/* Dark mode toast notifications */
+.dark .bg-\[\#363636\] {
+  background-color: #1f2937;
+}
+.dark .text-white {
+  color: #f1f5f9;
+}
+
+/* Dark mode status indicators */
+.dark .bg-green-500 {
+  background-color: #22c55e;
+}
+.dark .text-green-500 {
+  color: #4ade80;
+}

@@ -30,6 +30,20 @@ export const AuthProvider = ({ children }) => {
     return mockUser;
   };
 
+  const register = async (email, password, displayName) => {
+    const mockUser = {
+      email: email,
+      displayName: displayName,
+      uid: '123456',
+      shopName: `${displayName}'s Spaza Shop`,
+      role: 'owner'
+    };
+    
+    setUser(mockUser);
+    localStorage.setItem('spazex_user', JSON.stringify(mockUser));
+    return mockUser;
+  };
+
   const logout = async () => {
     setUser(null);
     localStorage.removeItem('spazex_user');
@@ -39,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     login,
+    register,
     logout,
     isAuthenticated: !!user,
   };
@@ -57,3 +72,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthContext;
