@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMenu, FiX, FiUser, FiLogOut, FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings } from 'react-icons/fi';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -13,13 +17,43 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+      closeMobileMenu();
+      setIsUserMenuOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  // Navigation items for authenticated users
+  const authenticatedNavItems = [
+    { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
+    { path: '/inventory', icon: FiPackage, label: 'Inventory' },
+    { path: '/sales', icon: FiTrendingUp, label: 'Sales' },
+    { path: '/forecast', icon: FiBarChart2, label: 'Forecast' },
+    { path: '/ai-coach', icon: FiCpu, label: 'AI Coach' },
+    { path: '/suppliers', icon: FiTruck, label: 'Suppliers' },
+  ];
+
+  // Navigation items for unauthenticated users
+  const publicNavItems = [
+    { path: '/features', label: 'Features' },
+    { path: '/for-owners', label: 'For Owners' },
+    { path: '/about', label: 'About' },
+  ];
+
+  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
+
   return (
     <nav className="bg-[#FBFBFB] border-b border-[#C4D9FF]/30 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
           {/* Logo Section */}
-          <Link to="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
             <div className="w-10 h-10 bg-[#C4D9FF] rounded-xl flex items-center justify-center font-bold text-white shadow-inner group-hover:bg-[#C5BAFE] transition-colors duration-300">
               S
             </div>
@@ -27,38 +61,86 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8">
-            <Link 
-              to="/features" 
-              className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
-            >
-              Features
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C4D9FF] transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <Link 
-              to="/for-owners" 
-              className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
-            >
-              For Owners
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C4D9FF] transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <Link 
-              to="/about" 
-              className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
-            >
-              About
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C4D9FF] transition-all duration-300 group-hover:w-full"></span>
-            </Link>
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link 
+                key={item.path}
+                to={item.path} 
+                className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group flex items-center gap-2"
+              >
+                {item.icon && <item.icon className="w-4 h-4" />}
+                {item.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C4D9FF] transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+            ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex">
-            <Link 
-              to="/login" 
-              className="bg-[#C4D9FF] text-gray-800 px-6 py-2.5 rounded-full font-semibold hover:bg-[#C5BAFE] hover:scale-105 transition-all duration-300 shadow-sm"
-            >
-              Get Started
-            </Link>
+          {/* Desktop CTA / User Menu */}
+          <div className="hidden md:flex items-center gap-4">
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 rounded-full px-4 py-2 transition-colors border border-gray-200"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#C4D9FF] flex items-center justify-center text-gray-800 font-semibold">
+                    {user?.displayName?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  <span className="text-sm text-gray-700 hidden lg:inline">
+                    {user?.displayName || 'User'}
+                  </span>
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+
+                {/* User Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="font-semibold text-gray-800">{user?.displayName}</p>
+                      <p className="text-sm text-gray-500">{user?.email}</p>
+                      {user?.shopName && (
+                        <p className="text-sm text-gray-600 mt-1">🏪 {user.shopName}</p>
+                      )}
+                    </div>
+                    
+                    <Link 
+                      to="/settings" 
+                      className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <FiSettings className="w-4 h-4" />
+                      <span>Settings</span>
+                    </Link>
+                    
+                    <Link 
+                      to="/profile" 
+                      className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <FiUser className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
+                    
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors w-full border-t border-gray-100 mt-2 pt-2"
+                    >
+                      <FiLogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link 
+                to="/login" 
+                className="bg-[#C4D9FF] text-gray-800 px-6 py-2.5 rounded-full font-semibold hover:bg-[#C5BAFE] hover:scale-105 transition-all duration-300 shadow-sm"
+              >
+                Get Started
+              </Link>
+            )}
           </div>
 
           {/* Mobile Hamburger Button */}
@@ -83,40 +165,76 @@ const Navbar = () => {
         className={`
           md:hidden bg-white border-b border-[#C4D9FF] overflow-hidden
           transition-all duration-300 ease-in-out
-          ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+          ${isMobileMenuOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}
         `}
       >
-        <div className="px-4 py-4 space-y-3">
-          <Link 
-            to="/features" 
-            className="block text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-            onClick={closeMobileMenu}
-          >
-            Features
-          </Link>
-          <Link 
-            to="/for-owners" 
-            className="block text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-            onClick={closeMobileMenu}
-          >
-            For Owners
-          </Link>
-          <Link 
-            to="/about" 
-            className="block text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-            onClick={closeMobileMenu}
-          >
-            About
-          </Link>
-          
-          <div className="pt-2 border-t border-gray-100">
+        <div className="px-4 py-4 space-y-2">
+          {/* User Info for mobile */}
+          {isAuthenticated && user && (
+            <div className="flex items-center gap-3 px-2 py-3 mb-3 bg-gray-50 rounded-xl">
+              <div className="w-10 h-10 rounded-full bg-[#C4D9FF] flex items-center justify-center text-gray-800 font-semibold">
+                {user.displayName?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">{user.displayName}</p>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Links */}
+          {navItems.map((item) => (
             <Link 
-              to="/login" 
-              className="block text-center bg-[#C4D9FF] text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-[#C5BAFE] transition-all"
+              key={item.path}
+              to={item.path} 
+              className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
               onClick={closeMobileMenu}
             >
-              Get Started
+              {item.icon && <item.icon className="w-5 h-5" />}
+              {item.label}
             </Link>
+          ))}
+
+          {/* Additional links for authenticated users */}
+          {isAuthenticated && (
+            <>
+              <Link 
+                to="/settings" 
+                className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <FiSettings className="w-5 h-5" />
+                Settings
+              </Link>
+              <Link 
+                to="/profile" 
+                className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <FiUser className="w-5 h-5" />
+                Profile
+              </Link>
+            </>
+          )}
+          
+          <div className="pt-2 border-t border-gray-100">
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 px-6 py-3 rounded-xl font-semibold hover:bg-red-100 transition-all"
+              >
+                <FiLogOut className="w-5 h-5" />
+                Logout
+              </button>
+            ) : (
+              <Link 
+                to="/login" 
+                className="block text-center bg-[#C4D9FF] text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-[#C5BAFE] transition-all"
+                onClick={closeMobileMenu}
+              >
+                Get Started
+              </Link>
+            )}
           </div>
         </div>
       </div>
