@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+:root {
+	--spx-bg: #FBFBFB; /* rgb(251, 251, 251) */
+	--spx-accent-1: #E8F9FF; /* rgb(232, 249, 255) */
+	--spx-accent-2: #C4D9FF; /* rgb(196, 217, 255) */
+	--spx-accent-3: #C5BAFF; /* rgb(197, 186, 255) */
+}
+
+/* Utility classes for shared colors */
+.bg-spx { background-color: var(--spx-bg); }
+.bg-spx-accent-1 { background-color: var(--spx-accent-1); }
+.bg-spx-accent-2 { background-color: var(--spx-accent-2); }
+.bg-spx-accent-3 { background-color: var(--spx-accent-3); }
+
+.text-spx-accent-2 { color: var(--spx-accent-2); }
+.ring-spx-accent-2:focus { box-shadow: 0 0 0 3px rgba(196,217,255,0.4); }
+
