@@ -1,4 +1,5 @@
 import React from 'react';
+import './Forecast.css';
 import ForecastOverview from './components/ForecastOverview';
 import ForecastCoachTip from './components/ForecastCoachTip';
 import ForecastChart from './components/ForecastChart';
@@ -67,7 +68,7 @@ const Forecast = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 spx-forecast">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Demand Forecast</h1>
         <div className="text-sm text-gray-500">Estimated revenue: <strong>{formatCurrency(totalPredictedRevenue)}</strong></div>

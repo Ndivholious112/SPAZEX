@@ -1,0 +1,28 @@
+.spx-sales .chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.spx-sales .chart-card {
+  height: 14rem;
+}
+
+.spx-sales .chart-card .react-chartjs-2 {
+  height: 100% !important;
+}
+
+.spx-sales .cards-stack > * {
+  margin-bottom: 1rem;
+}
+
+/* make the pie and line visually aligned */
+.spx-sales .chart-grid > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@media (max-width: 1024px) {
+  .spx-sales .chart-grid { grid-template-columns: 1fr; }
+}

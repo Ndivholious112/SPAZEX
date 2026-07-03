@@ -1,4 +1,5 @@
 import React from 'react';
+import './Sidebar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings, FiUser } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,7 +26,7 @@ const Sidebar = () => {
 	const [analyticsOpen, setAnalyticsOpen] = React.useState(true);
 
 	return (
-		<aside className="hidden md:flex md:flex-col w-64 bg-[#FBFBFB] border-r border-[#C4D9FF]/30 p-4">
+		<aside className="hidden md:flex md:flex-col w-64 bg-[#FBFBFB] border-r border-[#C4D9FF]/30 p-4 spx-sidebar">
 
 			<nav className="flex-1">
 				{navItems.map((item) => (
