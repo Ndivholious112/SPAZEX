@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings, FiUser } from 'react-icons/fi';
+import { FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings, FiUser, FiFileText } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
 	const authenticatedNavItems = [
 		{ path: '/dashboard', icon: FiHome, label: 'Dashboard' },
 		{ path: '/inventory', icon: FiPackage, label: 'Products' },
+		{ path: '/invoices', icon: FiFileText, label: 'Invoices' },
 		{ path: '/ai-coach', icon: FiCpu, label: 'AI Coach' },
 		{ path: '/suppliers', icon: FiTruck, label: 'Suppliers' },
 	];

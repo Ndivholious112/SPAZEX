@@ -14,6 +14,7 @@ import ForgotPassword from './features/auth/ForgotPassword';
 import Dashboard from './features/dashboard/Dashboard';
 import Inventory from './features/inventory/Inventory';
 import Sales from './features/sales/Sales';
+import Invoices from './features/invoices/Invoices';
 import Forecast from './features/forecasting/Forecast';
 import AICoach from './features/ai-coach/AICoach';
 import Suppliers from './features/suppliers/Suppliers';
@@ -81,6 +82,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/inventory" element={<Inventory />} />
               <Route path="/sales" element={<Sales />} />
+              <Route path="/invoices" element={<Invoices />} />
               <Route path="/forecast" element={<Forecast />} />
               <Route path="/ai-coach" element={<AICoach />} />
               <Route path="/suppliers" element={<Suppliers />} />
