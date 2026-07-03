@@ -1,0 +1,112 @@
+.spx-suppliers {
+  font-family: inherit;
+}
+
+.spx-suppliers .btn-primary {
+  background-color: #C4D9FF;
+  color: #111827;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.spx-suppliers .btn-primary:hover {
+  background-color: #C5BAFE;
+}
+
+.spx-suppliers .btn-secondary {
+  background-color: #E8F9FF;
+  color: #111827;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.spx-suppliers .btn-secondary:hover {
+  background-color: #D0E7FF;
+}
+
+.spx-suppliers .card {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 1rem;
+}
+
+.spx-suppliers .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spx-suppliers .badge {
+  background: #F8FAFC;
+  color: #0F172A;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.spx-suppliers .supplier-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.75rem;
+  background: #F9FAFB;
+}
+
+.spx-suppliers .field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.spx-suppliers .field-input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.spx-suppliers .field-input:focus {
+  border-color: #C4D9FF;
+  box-shadow: 0 0 0 4px rgba(196, 217, 255, 0.25);
+}
+
+.spx-suppliers .comparison-table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.spx-suppliers .comparison-table th,
+.spx-suppliers .comparison-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.spx-suppliers .comparison-table th {
+  color: #475569;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.spx-suppliers .comparison-row:hover {
+  background: #F8FAFC;
+}
+
+@media (max-width: 1024px) {
+  .spx-suppliers .grid-cols-1\@lg\:grid-cols-\[2fr_1fr\] {
+    grid-template-columns: 1fr;
+  }
+}

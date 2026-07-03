@@ -34,6 +34,11 @@ html {
 	--spx-accent-1: #E8F9FF; /* rgb(232, 249, 255) */
 	--spx-accent-2: #C4D9FF; /* rgb(196, 217, 255) */
 	--spx-accent-3: #C5BAFF; /* rgb(197, 186, 255) */
+
+	/* Typography */
+	--spx-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+	--spx-heading-color: #1f2937; /* gray-800 */
+	--spx-body-color: #374151; /* gray-700 */
 }
 
 /* Utility classes for shared colors */
@@ -44,4 +49,24 @@ html {
 
 .text-spx-accent-2 { color: var(--spx-accent-2); }
 .ring-spx-accent-2:focus { box-shadow: 0 0 0 3px rgba(196,217,255,0.4); }
+
+/* Base fonts */
+html, body {
+	font-family: var(--spx-font-family);
+	color: var(--spx-body-color);
+	background-color: var(--spx-bg);
+}
+
+/* Consistent headings for the app */
+/* Use clamp for responsive scaling on small screens */
+h1, .spx-h1 { font-size: clamp(1.5rem, 2.6vw, 2.25rem); line-height: 1.05; font-weight: 700; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
+h2, .spx-h2 { font-size: clamp(1.25rem, 2.1vw, 1.75rem); line-height: 1.1; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
+h3, .spx-h3 { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.15; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.5rem 0; }
+h4, .spx-h4 { font-size: clamp(0.95rem, 1.2vw, 1rem); line-height: 1.2; font-weight: 600; color: var(--spx-heading-color); margin: 0 0 0.4rem 0; }
+
+/* Small utility to apply consistent heading style when components use custom tags */
+.spx-heading { color: var(--spx-heading-color); font-family: var(--spx-font-family); }
+
+/* Ensure headings don't break on small screens */
+h1, h2, h3, h4 { word-break: break-word; }
 

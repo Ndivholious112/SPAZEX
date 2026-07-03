@@ -1,0 +1,26 @@
+.spx-sidebar {
+  /* make sidebar fill height and add subtle shadow */
+  min-height: 100vh;
+}
+
+.spx-sidebar a {
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.spx-sidebar .active-link,
+.spx-sidebar a:hover {
+  background-color: rgba(196,217,255,0.18);
+  color: #111827; /* gray-900 */
+}
+
+.spx-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+.spx-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.08);
+  border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .spx-sidebar { min-height: auto; }
+}
