@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
@@ -388,101 +390,105 @@ const MainLayout = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Auth Routes - No Navbar, No Sidebar, No Footer */}
-          <Route path="/login" element={
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          } />
-          <Route path="/register" element={
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          } />
-          <Route path="/forgot-password" element={
-            <AuthLayout>
-              <ForgotPassword />
-            </AuthLayout>
-          } />
+      <LanguageProvider>
+        <ThemeProvider>
+          <Router>
+            <Routes>
+              {/* Auth Routes - No Navbar, No Sidebar, No Footer */}
+              <Route path="/login" element={
+                <AuthLayout>
+                  <Login />
+                </AuthLayout>
+              } />
+              <Route path="/register" element={
+                <AuthLayout>
+                  <Register />
+                </AuthLayout>
+              } />
+              <Route path="/forgot-password" element={
+                <AuthLayout>
+                  <ForgotPassword />
+                </AuthLayout>
+              } />
 
-          {/* Public Routes - With Navbar and Footer */}
-          <Route path="/" element={
-            <MainLayout>
-              <>
-                <Hero />
-                <Problem />
-                <Features />
-                <Persona />
-                <CTA />
-              </>
-            </MainLayout>
-          } />
-          <Route path="/features" element={
-            <MainLayout>
-              <Features />
-            </MainLayout>
-          } />
-          <Route path="/for-owners" element={
-            <MainLayout>
-              <ForOwners />
-            </MainLayout>
-          } />
-          <Route path="/about" element={
-            <MainLayout>
-              <About />
-            </MainLayout>
-          } />
+              {/* Public Routes - With Navbar and Footer */}
+              <Route path="/" element={
+                <MainLayout>
+                  <>
+                    <Hero />
+                    <Problem />
+                    <Features />
+                    <Persona />
+                    <CTA />
+                  </>
+                </MainLayout>
+              } />
+              <Route path="/features" element={
+                <MainLayout>
+                  <Features />
+                </MainLayout>
+              } />
+              <Route path="/for-owners" element={
+                <MainLayout>
+                  <ForOwners />
+                </MainLayout>
+              } />
+              <Route path="/about" element={
+                <MainLayout>
+                  <About />
+                </MainLayout>
+              } />
 
-          {/* Protected Routes - With Navbar, Sidebar (via protectedPaths match), and Footer */}
-          <Route path="/dashboard" element={
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
-          } />
-          <Route path="/inventory" element={
-            <MainLayout>
-              <Inventory />
-            </MainLayout>
-          } />
-          <Route path="/sales" element={
-            <MainLayout>
-              <Sales />
-            </MainLayout>
-          } />
-          <Route path="/invoices" element={
-            <MainLayout>
-              <Invoices />
-            </MainLayout>
-          } />
-          <Route path="/forecast" element={
-            <MainLayout>
-              <Forecast />
-            </MainLayout>
-          } />
-          <Route path="/ai-coach" element={
-            <MainLayout>
-              <AICoach />
-            </MainLayout>
-          } />
-          <Route path="/suppliers" element={
-            <MainLayout>
-              <Suppliers />
-            </MainLayout>
-          } />
-          <Route path="/settings" element={
-            <MainLayout>
-              <Settings />
-            </MainLayout>
-          } />
-          <Route path="/profile" element={
-            <MainLayout>
-              <Profile />
-            </MainLayout>
-          } />
-        </Routes>
-      </Router>
+              {/* Protected Routes - With Navbar, Sidebar (via protectedPaths match), and Footer */}
+              <Route path="/dashboard" element={
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              } />
+              <Route path="/inventory" element={
+                <MainLayout>
+                  <Inventory />
+                </MainLayout>
+              } />
+              <Route path="/sales" element={
+                <MainLayout>
+                  <Sales />
+                </MainLayout>
+              } />
+              <Route path="/invoices" element={
+                <MainLayout>
+                  <Invoices />
+                </MainLayout>
+              } />
+              <Route path="/forecast" element={
+                <MainLayout>
+                  <Forecast />
+                </MainLayout>
+              } />
+              <Route path="/ai-coach" element={
+                <MainLayout>
+                  <AICoach />
+                </MainLayout>
+              } />
+              <Route path="/suppliers" element={
+                <MainLayout>
+                  <Suppliers />
+                </MainLayout>
+              } />
+              <Route path="/settings" element={
+                <MainLayout>
+                  <Settings />
+                </MainLayout>
+              } />
+              <Route path="/profile" element={
+                <MainLayout>
+                  <Profile />
+                </MainLayout>
+              } />
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </LanguageProvider>
     </AuthProvider>
   );
 }
