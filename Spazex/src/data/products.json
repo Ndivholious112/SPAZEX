@@ -11,7 +11,7 @@
     "name": "Albany White Bread",
     "brand": "Albany",
     "category": "Bread",
-    "image": "/images/Albany Bread-white.webp"
+    "image": "/images/Albany Bread-white.png"
   },
   {
     "id": 3,
@@ -37,9 +37,9 @@
   {
     "id": 6,
     "name": "Sunflower Cooking Oil 2L",
-    "brand": "Sunflower",
+    "brand": "Excell",
     "category": "Cooking",
-    "image": "/images/sunflower-oil.jpg"
+    "image": "/images/Excella-Sunflower-Oil-2L.webp"
   },
   {
     "id": 7,
@@ -53,6 +53,6 @@
     "name": "Ace Maize Meal 5kg",
     "brand": "Ace",
     "category": "Maize Meal",
-    "image": "/images/ace-maize-meal.jpg"
+    "image": "/images/ace.jpg"
   }
 ]

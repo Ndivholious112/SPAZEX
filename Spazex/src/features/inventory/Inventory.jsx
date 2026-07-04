@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import useInventory from '../../hooks/useInventory';
 import { Link } from 'react-router-dom';
 import { 
@@ -20,7 +20,10 @@ import {
   FiCpu,
   FiImage,
   FiChevronDown,
-  FiMoreVertical
+  FiMoreVertical,
+  FiCamera,
+  FiUpload,
+  FiInfo
 } from 'react-icons/fi';
 
 // Import products data from JSON file
@@ -35,6 +38,7 @@ const Inventory = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDuplicateAlert, setShowDuplicateAlert] = useState(false);
   
   // Form States
   const [currentProduct, setCurrentProduct] = useState(null);
@@ -43,6 +47,7 @@ const Inventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(null);
+  const [duplicateProduct, setDuplicateProduct] = useState(null);
   
   // Add/Edit Form States
   const [formData, setFormData] = useState({
@@ -51,8 +56,12 @@ const Inventory = () => {
     category: '',
     stock: 0,
     price: 0,
-    supplier: ''
+    supplier: '',
+    image: null
   });
+  const [imagePreview, setImagePreview] = useState(null);
+  const addFileInputRef = useRef(null);
+  const editFileInputRef = useRef(null);
 
   // Get unique categories from products data
   const getAvailableCategories = () => {
@@ -95,9 +104,31 @@ const Inventory = () => {
   // Get unique categories for filter
   const filterCategories = ['All Categories', ...new Set((inventory || []).map(item => item.category))];
 
+  // Check for duplicate product (case-insensitive)
+  const checkDuplicate = (productName, excludeId = null) => {
+    if (!productName) return null;
+    
+    const normalizedName = productName.toLowerCase().trim();
+    return inventory.find(item => 
+      item.name.toLowerCase().trim() === normalizedName && 
+      (excludeId === null || item.id !== excludeId)
+    );
+  };
+
   // CRUD Operations
   const addProduct = async (newProduct) => {
-    const image = getProductImage(newProduct.name);
+    // Check for duplicate before adding
+    const existing = checkDuplicate(newProduct.name);
+    if (existing) {
+      setDuplicateProduct(existing);
+      setShowDuplicateAlert(true);
+      // Close the add modal
+      setShowAddModal(false);
+      return;
+    }
+
+    // Use uploaded image if available, otherwise try to get from catalog
+    const image = newProduct.image || getProductImage(newProduct.name);
     const product = {
       ...newProduct,
       image: image,
@@ -109,7 +140,18 @@ const Inventory = () => {
   };
 
   const editProduct = async (updatedProduct) => {
-    const image = getProductImage(updatedProduct.name);
+    // Check for duplicate excluding the current product
+    const existing = checkDuplicate(updatedProduct.name, updatedProduct.id);
+    if (existing) {
+      setDuplicateProduct(existing);
+      setShowDuplicateAlert(true);
+      // Close the edit modal
+      setShowEditModal(false);
+      return;
+    }
+
+    // Use uploaded image if available, otherwise try to get from catalog
+    const image = updatedProduct.image || getProductImage(updatedProduct.name);
     const changes = { 
       ...updatedProduct, 
       image: image,
@@ -139,6 +181,12 @@ const Inventory = () => {
   // Modal Handlers
   const openAddModal = () => {
     resetForm();
+    setImagePreview(null);
+    setShowDuplicateAlert(false);
+    setDuplicateProduct(null);
+    if (addFileInputRef.current) {
+      addFileInputRef.current.value = '';
+    }
     setShowAddModal(true);
   };
 
@@ -150,8 +198,15 @@ const Inventory = () => {
       category: product.category,
       stock: product.stock,
       price: product.price,
-      supplier: product.supplier || ''
+      supplier: product.supplier || '',
+      image: product.image || null
     });
+    setImagePreview(product.image || null);
+    setShowDuplicateAlert(false);
+    setDuplicateProduct(null);
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = '';
+    }
     setShowEditModal(true);
   };
 
@@ -174,8 +229,12 @@ const Inventory = () => {
       category: '',
       stock: 0,
       price: 0,
-      supplier: ''
+      supplier: '',
+      image: null
     });
+    setImagePreview(null);
+    setShowDuplicateAlert(false);
+    setDuplicateProduct(null);
   };
 
   // Form Change Handler
@@ -185,6 +244,50 @@ const Inventory = () => {
       ...prev,
       [name]: name === 'stock' || name === 'price' ? parseFloat(value) || 0 : value
     }));
+  };
+
+  // Image Upload Handler
+  const handleImageUpload = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image size must be less than 2MB');
+        return;
+      }
+      
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a valid image (JPEG, PNG, WEBP, or GIF)');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target.result;
+        setImagePreview(imageData);
+        setFormData(prev => ({
+          ...prev,
+          image: imageData
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({
+      ...prev,
+      image: null
+    }));
+    if (addFileInputRef.current) {
+      addFileInputRef.current.value = '';
+    }
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = '';
+    }
   };
 
   const toggleMobileMenu = (id) => {
@@ -300,34 +403,71 @@ const Inventory = () => {
   const criticalStockItems = inventory.filter(item => item.stock <= 5).length;
   const totalValue = inventory.reduce((sum, item) => sum + (item.stock * item.price), 0);
 
-  // Helper function to render product image
+  // Helper function to get initials from product name
+  const getInitials = (name) => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    return words.slice(0, 2).map(word => word.charAt(0).toUpperCase()).join('');
+  };
+
+  // Helper function to get a consistent color based on product name
+  const getPlaceholderColor = (name) => {
+    if (!name) return 'bg-gray-200 text-gray-500';
+    
+    const colors = [
+      'bg-blue-100 text-blue-600',
+      'bg-purple-100 text-purple-600',
+      'bg-pink-100 text-pink-600',
+      'bg-green-100 text-green-600',
+      'bg-yellow-100 text-yellow-600',
+      'bg-red-100 text-red-600',
+      'bg-indigo-100 text-indigo-600',
+      'bg-teal-100 text-teal-600',
+      'bg-orange-100 text-orange-600',
+      'bg-cyan-100 text-cyan-600'
+    ];
+    
+    // Use the sum of character codes to get a consistent index
+    const sum = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[sum % colors.length];
+  };
+
+  // Helper function to render product image with placeholder
   const renderProductImage = (product) => {
     const imageUrl = product.image || getProductImage(product.name);
+    
     if (imageUrl) {
       return (
         <img 
           src={imageUrl} 
           alt={product.name}
-          className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg"
+          className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg flex-shrink-0"
           onError={(e) => {
             e.target.onerror = null;
             e.target.style.display = 'none';
+            // Show placeholder on image error
             const parent = e.target.parentElement;
-            const fallback = document.createElement('div');
-            fallback.className = 'w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400';
-            fallback.innerHTML = `
-              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            `;
-            parent.appendChild(fallback);
+            const placeholder = document.createElement('div');
+            const initials = getInitials(product.name);
+            const colorClass = getPlaceholderColor(product.name);
+            placeholder.className = `w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-semibold text-sm sm:text-base flex-shrink-0 ${colorClass}`;
+            placeholder.textContent = initials;
+            parent.appendChild(placeholder);
           }}
         />
       );
     }
+    
+    // Show initials placeholder
+    const initials = getInitials(product.name);
+    const colorClass = getPlaceholderColor(product.name);
+    
     return (
-      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-        <FiImage className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-semibold text-sm sm:text-base flex-shrink-0 ${colorClass}`}>
+        {initials}
       </div>
     );
   };
@@ -349,6 +489,64 @@ const Inventory = () => {
         <FiPlus className="w-4 h-4 sm:w-5 sm:h-5" />
         Add Your First Product
       </button>
+    </div>
+  );
+
+  // Image Upload Component
+  const ImageUploadSection = ({ preview, onUpload, onRemove, fileInputRef, label }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label || 'Product Image'}</label>
+      <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-6 text-center hover:border-[#C4D9FF] transition-colors">
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={onUpload}
+        />
+        
+        {preview ? (
+          <div className="relative inline-block">
+            <img 
+              src={preview} 
+              alt="Product preview" 
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl object-cover mx-auto"
+            />
+            <button
+              onClick={onRemove}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg"
+              type="button"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+            <p className="text-xs text-gray-500 mt-2">Click below to change image</p>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+              type="button"
+            >
+              Change Image
+            </button>
+          </div>
+        ) : (
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="cursor-pointer"
+          >
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                <FiCamera className="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-700">Upload Product Image</p>
+              <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP (Max 2MB)</p>
+              <p className="text-xs text-blue-600 mt-2">Click to browse</p>
+            </div>
+          </div>
+        )}
+      </div>
+      {!preview && (
+        <p className="text-xs text-gray-400 mt-1">Upload a custom image or leave blank to auto-load from catalog</p>
+      )}
     </div>
   );
 
@@ -668,6 +866,54 @@ const Inventory = () => {
         </div>
       )}
 
+      {/* Duplicate Product Alert Modal */}
+      {showDuplicateAlert && duplicateProduct && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl animate-fade-in">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiInfo className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Product Already Exists</h3>
+              <p className="text-gray-600 mb-2">
+                <span className="font-bold">"{duplicateProduct.name}"</span> is already in your inventory.
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                Current stock: <span className="font-medium">{duplicateProduct.stock} units</span>
+                <br />
+                Price: <span className="font-medium">R{duplicateProduct.price.toFixed(2)}</span>
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => {
+                    setShowDuplicateAlert(false);
+                    setDuplicateProduct(null);
+                    // Open edit modal for the existing product
+                    openEditModal(duplicateProduct);
+                  }}
+                  className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all duration-300"
+                >
+                  Update Existing
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowDuplicateAlert(false);
+                    setDuplicateProduct(null);
+                    // Reopen the add modal if it was closed
+                    if (!showAddModal && !showEditModal) {
+                      openAddModal();
+                    }
+                  }}
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Product Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
@@ -694,7 +940,7 @@ const Inventory = () => {
                   placeholder="Enter product name"
                   required
                 />
-                <p className="text-xs text-gray-400 mt-1">Image will be automatically loaded from product catalog</p>
+                <p className="text-xs text-gray-400 mt-1">Product names must be unique</p>
               </div>
               
               <div>
@@ -773,6 +1019,15 @@ const Inventory = () => {
                   />
                 </div>
               </div>
+              
+              {/* Image Upload Section */}
+              <ImageUploadSection 
+                preview={imagePreview}
+                onUpload={(e) => handleImageUpload(e, 'add')}
+                onRemove={removeImage}
+                fileInputRef={addFileInputRef}
+                label="Product Image (Optional)"
+              />
             </div>
             
             <div className="flex gap-3 mt-4 sm:mt-6">
@@ -819,7 +1074,7 @@ const Inventory = () => {
                   className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all text-sm sm:text-base"
                   required
                 />
-                <p className="text-xs text-gray-400 mt-1">Image will be automatically loaded from product catalog</p>
+                <p className="text-xs text-gray-400 mt-1">Product names must be unique</p>
               </div>
               
               <div>
@@ -894,6 +1149,15 @@ const Inventory = () => {
                   />
                 </div>
               </div>
+              
+              {/* Image Upload Section */}
+              <ImageUploadSection 
+                preview={imagePreview}
+                onUpload={(e) => handleImageUpload(e, 'edit')}
+                onRemove={removeImage}
+                fileInputRef={editFileInputRef}
+                label="Product Image"
+              />
             </div>
             
             <div className="flex gap-3 mt-4 sm:mt-6">
