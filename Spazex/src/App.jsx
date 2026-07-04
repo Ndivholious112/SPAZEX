@@ -49,7 +49,7 @@ import Profile from './features/settings/Profile';
 // Landing Page Components (inline)
 const Hero = () => (
   <section className="relative pt-20 pb-32 overflow-hidden bg-gradient-to-b from-[#E8F9FF]/50 to-[#FBFBFB]">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div className="w-full px-4 sm:px-6 lg:px-8 relative">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C5BAFE]/20 text-[#1E293B] font-medium text-sm mb-6 border border-[#C5BAFE]/30">
@@ -173,7 +173,7 @@ const Problem = () => {
 
   return (
     <section id="problem" className="py-24 bg-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">The Challenge We're Solving</h2>
           <p className="text-lg text-gray-600">Many spaza shop owners rely on memory, notebooks, and guesswork. This leads to costly mistakes in an industry with tight margins.</p>
@@ -236,7 +236,7 @@ const Features = () => {
 
   return (
     <section id="features" className="py-24 bg-[#FBFBFB]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <span className="text-blue-600 font-bold uppercase tracking-wider text-sm mb-2 block">Our Solution</span>
@@ -274,7 +274,7 @@ const Features = () => {
 
 const Persona = () => (
   <section id="persona" className="py-24 bg-white">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full px-4 sm:px-6 lg:px-8">
       <div className="bg-[#1E293B] rounded-3xl overflow-hidden shadow-2xl">
         <div className="grid grid-cols-1 lg:grid-cols-2">
           <div className="p-12 lg:p-16 flex flex-col justify-center">
@@ -331,14 +331,14 @@ const CTA = () => (
 
 // Simple placeholder pages
 const About = () => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
     <h1 className="text-3xl font-bold text-gray-800">About Spazex</h1>
     <p className="text-gray-600 mt-2">Coming soon...</p>
   </div>
 );
 
 const ForOwners = () => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
     <h1 className="text-3xl font-bold text-gray-800">For Shop Owners</h1>
     <p className="text-gray-600 mt-2">Coming soon...</p>
   </div>

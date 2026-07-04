@@ -84,7 +84,7 @@ const Sales = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative spx-sales">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-12 relative spx-sales">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Sales</h1>
         <NewSale onAdd={addSale} />

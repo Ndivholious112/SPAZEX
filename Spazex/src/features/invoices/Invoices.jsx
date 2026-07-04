@@ -11,7 +11,7 @@ const Invoices = () => {
   const invoices = invoicesData;
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+    <div className="w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Invoices</h1>

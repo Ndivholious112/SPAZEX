@@ -2,7 +2,7 @@ import React from 'react';
 
 const AICoach = () => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl font-bold text-gray-800">AI Business Coach</h1>
       <p className="text-gray-600 mt-2">Get AI-powered business advice and recommendations</p>
       
