@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import useInventory from '../../hooks/useInventory';
 import { Link } from 'react-router-dom';
 import { 
   FiPlus, 
@@ -20,66 +21,8 @@ import {
 } from 'react-icons/fi';
 
 const Inventory = () => {
-  // State Management with localStorage
-  const [inventory, setInventory] = useState(() => {
-    const saved = localStorage.getItem('spazex_inventory');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    // Default data if no saved data
-    return [
-      { 
-        id: 1, 
-        name: 'Blue Ribbon Bread', 
-        category: 'Bakery', 
-        stock: 45, 
-        price: 18.50,
-        supplier: 'Blue Ribbon',
-        lastUpdated: '2026-07-03'
-      },
-      { 
-        id: 2, 
-        name: 'Coca-Cola 2L', 
-        category: 'Beverages', 
-        stock: 32, 
-        price: 22.00,
-        supplier: 'Coca-Cola',
-        lastUpdated: '2026-07-02'
-      },
-      { 
-        id: 3, 
-        name: 'Maize Meal 5kg', 
-        category: 'Grains', 
-        stock: 12, 
-        price: 45.00,
-        supplier: 'Ace',
-        lastUpdated: '2026-07-01'
-      },
-      { 
-        id: 4, 
-        name: 'Cooking Oil 2L', 
-        category: 'Cooking', 
-        stock: 8, 
-        price: 65.00,
-        supplier: 'Sunflower',
-        lastUpdated: '2026-07-03'
-      },
-      { 
-        id: 5, 
-        name: 'Sugar 2.5kg', 
-        category: 'Groceries', 
-        stock: 3, 
-        price: 35.00,
-        supplier: 'Selati',
-        lastUpdated: '2026-07-02'
-      }
-    ];
-  });
-
-  // Save to localStorage whenever inventory changes
-  useEffect(() => {
-    localStorage.setItem('spazex_inventory', JSON.stringify(inventory));
-  }, [inventory]);
+  // Use inventory hook (single source of truth)
+  const { inventory, loading, add, update, remove } = useInventory();
 
   // Modal States
   const [showAddModal, setShowAddModal] = useState(false);
@@ -104,50 +47,37 @@ const Inventory = () => {
   });
 
   // Get unique categories for filter
-  const categories = ['All Categories', ...new Set(inventory.map(item => item.category))];
+  const categories = ['All Categories', ...new Set((inventory || []).map(item => item.category))];
 
   // CRUD Operations
-  const addProduct = (newProduct) => {
+  const addProduct = async (newProduct) => {
     const product = {
       ...newProduct,
-      id: Math.max(0, ...inventory.map(p => p.id), 0) + 1,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
-    setInventory([...inventory, product]);
+    await add(product);
     setShowAddModal(false);
     resetForm();
   };
 
-  const editProduct = (updatedProduct) => {
-    const updatedInventory = inventory.map(item => 
-      item.id === updatedProduct.id 
-        ? { ...updatedProduct, lastUpdated: new Date().toISOString().split('T')[0] }
-        : item
-    );
-    setInventory(updatedInventory);
+  const editProduct = async (updatedProduct) => {
+    const changes = { ...updatedProduct, lastUpdated: new Date().toISOString().split('T')[0] };
+    await update(updatedProduct.id, changes);
     setShowEditModal(false);
     resetForm();
   };
 
-  const deleteProduct = (productId) => {
-    setInventory(inventory.filter(item => item.id !== productId));
+  const deleteProduct = async (productId) => {
+    await remove(productId);
     setShowDeleteModal(false);
     setCurrentProduct(null);
   };
 
-  const adjustStock = (productId, quantity) => {
-    const updatedInventory = inventory.map(item => {
-      if (item.id === productId) {
-        let newStock = Math.max(0, item.stock - quantity);
-        return {
-          ...item,
-          stock: newStock,
-          lastUpdated: new Date().toISOString().split('T')[0]
-        };
-      }
-      return item;
-    });
-    setInventory(updatedInventory);
+  const adjustStock = async (productId, quantity) => {
+    const item = (inventory || []).find((i) => i.id === productId);
+    if (!item) return;
+    const newStock = Math.max(0, item.stock - quantity);
+    await update(productId, { stock: newStock, lastUpdated: new Date().toISOString().split('T')[0] });
     setShowAdjustModal(false);
     setCurrentProduct(null);
     setAdjustmentQty(1);

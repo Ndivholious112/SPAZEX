@@ -1,5 +1,6 @@
 import React from 'react';
-import invoicesData from '../../data/mockInvoices.json';
+import { getInvoices } from '../../services/api';
+import useSWR from 'swr';
 
 const statusStyles = {
   Paid: 'bg-green-100 text-green-700',
@@ -8,7 +9,8 @@ const statusStyles = {
 };
 
 const Invoices = () => {
-  const invoices = invoicesData;
+  const fetcher = async () => await getInvoices();
+  const { data: invoices = [] } = useSWR('invoices', fetcher);
 
   return (
     <div className="w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
