@@ -1,25 +1,26 @@
 import React, { useState, useMemo } from 'react';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiCheck, FiCreditCard, FiDollarSign, FiArrowUpRight, FiPackage, FiAlertTriangle, FiShield } from 'react-icons/fi';
+import useInventory from '../../hooks/useInventory';
+import useSales from '../../hooks/useSales';
+import api from '../../services/api';
+import { mutate } from 'swr';
 
-const PRODUCTS = [
-  { id: 1, name: 'Maggi 2-Minute Noodles (Chicken)', price: 9.5 },
-  { id: 2, name: 'Tastic Rice 2kg', price: 89.99 },
-  { id: 3, name: 'Parmalat Full Cream Milk 1L', price: 29.9 },
-  { id: 4, name: 'Crosse & Blackwell Baked Beans 410g', price: 27.5 },
-];
-
-const FIXED_DISCOUNT = 1.0;
+const FIXED_DISCOUNT = 0.0; // discount removed
 
 const Dashboard = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [lastInvoiceId, setLastInvoiceId] = useState(null);
   
   // Payment States
   const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' or 'cash'
   const [cashReceived, setCashReceived] = useState('');
 
   const toggleCart = () => setCartOpen(prev => !prev);
+
+  const { inventory = [], update: updateInventoryItem } = useInventory();
+  const { sales = [], add: addSale } = useSales();
 
   const addToCart = (product) => {
     setCartItems((prevItems) => {
@@ -65,7 +66,7 @@ const Dashboard = () => {
 
   const { subtotal, discount, finalTotal } = useMemo(() => {
     const sub = cartItems.reduce((sum, item) => sum + item.qty * item.price, 0);
-    const disc = sub > 0 ? Math.min(sub, FIXED_DISCOUNT) : 0;
+    const disc = 0; // discounts disabled
     return {
       subtotal: sub,
       discount: disc,
@@ -88,10 +89,50 @@ const Dashboard = () => {
       }
     }
 
-    setCheckoutSuccess(true);
-    setCartItems([]);
-    resetPaymentStates();
-    setCartOpen(false);
+    // record sale and update inventory
+    (async () => {
+      try {
+        const saleRecord = {
+          items: cartItems,
+          total: finalTotal,
+          paymentMethod,
+        };
+        const sale = await addSale(saleRecord);
+        // decrement inventory stocks
+        for (const it of cartItems) {
+          const inv = inventory.find((i) => i.id === it.id);
+          if (inv) {
+            const newStock = Math.max(0, (inv.stock || inv.qty || 0) - (it.qty || 0));
+            await updateInventoryItem(inv.id, { stock: newStock });
+          }
+        }
+        // create an invoice and refresh invoices listing
+        try {
+          const createdInv = await api.addInvoice({
+            saleRef: sale.id,
+            paymentMethod,
+            amount: sale.total || 0,
+            date: new Date().toLocaleDateString(),
+            dueDate: '',
+            status: paymentMethod === 'cash' ? 'Pending' : 'Paid'
+          });
+          console.debug('Invoice created', createdInv);
+          setLastInvoiceId(createdInv.id);
+          // fetch latest invoices and update SWR cache directly
+          const latest = await api.getInvoices();
+          mutate('invoices', latest, false);
+          console.debug('Invoices cache updated', latest.length);
+        } catch (e) {
+          console.error('Failed to create invoice', e);
+        }
+      } catch (e) {
+        console.error('Failed to record sale', e);
+      }
+      setCheckoutSuccess(true);
+      setCartItems([]);
+      resetPaymentStates();
+      setCartOpen(false);
+    })();
   };
 
   const totalCartItemsCount = useMemo(() => {
@@ -99,7 +140,7 @@ const Dashboard = () => {
   }, [cartItems]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
       
       <header className="border-b border-[#C4D9FF]/20 pb-6 mb-8">
         <div>
@@ -270,10 +311,6 @@ const Dashboard = () => {
                       <span>Subtotal:</span>
                       <span className="font-medium text-gray-800">R{subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-red-500">
-                      <span>Discount:</span>
-                      <span className="font-medium">-R{discount.toFixed(2)}</span>
-                    </div>
                     <div className="flex justify-between font-bold text-xs text-gray-800 pt-1.5 border-t border-dashed border-gray-100">
                       <span>Total:</span>
                       <span className="text-sm text-gray-900">R{finalTotal.toFixed(2)}</span>
@@ -304,6 +341,11 @@ const Dashboard = () => {
           <div>
             <h4 className="font-semibold">Order Completed Successfully!</h4>
             <p className="text-sm text-green-700">Thank you for your purchase.</p>
+            {lastInvoiceId && (
+              <p className="text-sm mt-1">
+                Invoice created: <a href="/invoices" className="font-bold text-green-800 underline">{lastInvoiceId} — view invoices</a>
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -313,7 +355,7 @@ const Dashboard = () => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-sm font-semibold text-gray-500">Total Revenue</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">R68 400</p>
+              <p className="text-3xl font-bold text-gray-900 mt-3">R{(sales.reduce((s, x) => s + (x.total || x.amount || 0), 0)).toFixed(2)}</p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
               <FiArrowUpRight className="w-4 h-4" />
@@ -327,7 +369,7 @@ const Dashboard = () => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-sm font-semibold text-gray-500">Total Orders</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">124</p>
+              <p className="text-3xl font-bold text-gray-900 mt-3">{sales.length}</p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
               <FiPackage className="w-4 h-4" />
@@ -341,7 +383,7 @@ const Dashboard = () => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-sm font-semibold text-gray-500">Low Stock Items</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">4</p>
+              <p className="text-3xl font-bold text-gray-900 mt-3">{(inventory.filter(i => (i.stock || i.qty || 0) <= 15)).length}</p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
               <FiAlertTriangle className="w-4 h-4" />
@@ -354,8 +396,8 @@ const Dashboard = () => {
         <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500">Profit Margin</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">26%</p>
+              <h3 className="text-sm font-semibold text-gray-500">Total Products</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-3">{inventory.length}</p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
               <FiShield className="w-4 h-4" />
@@ -368,7 +410,7 @@ const Dashboard = () => {
 
       {/* Main Catalog Grid */}
       <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {PRODUCTS.map((product) => (
+        {(inventory && inventory.length ? inventory : []).map((product) => (
           <article
             key={product.id}
             className="bg-white rounded-2xl shadow-sm hover:shadow-md p-6 border border-gray-100 flex flex-col justify-between transition-all duration-300 group"

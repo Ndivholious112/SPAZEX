@@ -42,7 +42,7 @@ const Suppliers = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 spx-suppliers">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-12 spx-suppliers">
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Suppliers</h1>
