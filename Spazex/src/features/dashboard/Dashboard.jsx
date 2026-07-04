@@ -350,56 +350,52 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="mt-10 mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
-          <div className="flex items-start justify-between gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500">Total Revenue</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">R{(sales.reduce((s, x) => s + (x.total || x.amount || 0), 0)).toFixed(2)}</p>
+              <p className="text-sm text-gray-500">Total Revenue</p>
+              <p className="text-2xl font-bold text-gray-800">R{(sales.reduce((s, x) => s + (x.total || x.amount || 0), 0)).toFixed(2)}</p>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-              <FiArrowUpRight className="w-4 h-4" />
-              +14%
-            </span>
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
+              <FiDollarSign className="w-5 h-5" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500">Total Orders</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">{sales.length}</p>
+              <p className="text-sm text-gray-500">Total Orders</p>
+              <p className="text-2xl font-bold text-gray-800">{sales.length}</p>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
-              <FiPackage className="w-4 h-4" />
-              Live
-            </span>
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+              <FiShoppingBag className="w-5 h-5" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500">Low Stock Items</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">{(inventory.filter(i => (i.stock || i.qty || 0) <= 15)).length}</p>
+              <p className="text-sm text-gray-500">Low Stock</p>
+              <p className="text-2xl font-bold text-orange-600">{(inventory.filter(i => (i.stock || i.qty || 0) <= 15)).length}</p>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-              <FiAlertTriangle className="w-4 h-4" />
-              Urgent
-            </span>
+            <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600">
+              <FiAlertTriangle className="w-5 h-5" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-500">Total Products</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-3">{inventory.length}</p>
+              <p className="text-sm text-gray-500">Total Products</p>
+              <p className="text-2xl font-bold text-violet-600">{inventory.length}</p>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
-              <FiShield className="w-4 h-4" />
-              Solid
-            </span>
+            <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center text-violet-600">
+              <FiPackage className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
