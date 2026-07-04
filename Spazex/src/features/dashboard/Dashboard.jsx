@@ -5,7 +5,7 @@ import useSales from '../../hooks/useSales';
 import api from '../../services/api';
 import { mutate } from 'swr';
 
-const FIXED_DISCOUNT = 1.0;
+const FIXED_DISCOUNT = 0.0; // discount removed
 
 const Dashboard = () => {
   const [cartOpen, setCartOpen] = useState(false);
@@ -66,7 +66,7 @@ const Dashboard = () => {
 
   const { subtotal, discount, finalTotal } = useMemo(() => {
     const sub = cartItems.reduce((sum, item) => sum + item.qty * item.price, 0);
-    const disc = sub > 0 ? Math.min(sub, FIXED_DISCOUNT) : 0;
+    const disc = 0; // discounts disabled
     return {
       subtotal: sub,
       discount: disc,
@@ -310,10 +310,6 @@ const Dashboard = () => {
                     <div className="flex justify-between">
                       <span>Subtotal:</span>
                       <span className="font-medium text-gray-800">R{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-red-500">
-                      <span>Discount:</span>
-                      <span className="font-medium">-R{discount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-xs text-gray-800 pt-1.5 border-t border-dashed border-gray-100">
                       <span>Total:</span>
