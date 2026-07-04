@@ -8,6 +8,7 @@ import ActionCenter from './components/ActionCenter';
 import TopSellers from './components/TopSellers';
 import SalesPieChart from './components/SalesPieChart';
 import WhatsAppFab from './components/WhatsAppFab';
+import api from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 
 const defaultRows = [
@@ -31,22 +32,26 @@ const Sales = () => {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    try {
-      const cached = localStorage.getItem('salesRows');
-      const parsed = cached ? JSON.parse(cached) : null;
-      setRows(parsed && parsed.length ? parsed : defaultRows);
-    } catch (e) {
-      setRows(defaultRows);
-    }
+    let mounted = true;
 
-    // simulate fetch latency
-    const t = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(t);
+    const loadSales = async () => {
+      try {
+        const sales = await api.getSales();
+        if (!mounted) return;
+        setRows(sales || []);
+      } catch (e) {
+        console.error('Failed to load sales', e);
+        if (!mounted) return;
+        setRows([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadSales();
+
+    return () => { mounted = false; };
   }, []);
-
-  React.useEffect(() => {
-    try { localStorage.setItem('salesRows', JSON.stringify(rows)); } catch (e) {}
-  }, [rows]);
 
   const total = rows.reduce((s, r) => s + r.amount, 0);
 
@@ -62,32 +67,41 @@ const Sales = () => {
     };
   }, [total, rows.length]);
 
-  const addSale = (sale) => {
-    setRows((r) => [sale, ...r]);
+  const addSale = async (sale) => {
+    try {
+      const created = await api.addSale(sale);
+      setRows((r) => [created, ...r]);
+    } catch (e) {
+      console.error('Failed to save sale', e);
+      alert('Unable to save sale right now. Please try again.');
+    }
   };
 
-  const deleteSale = (saleId) => {
+  const deleteSale = async (saleId) => {
     const saleToDelete = rows.find(r => r.id === saleId);
     if (!saleToDelete) return;
 
     if (window.confirm(`Are you sure you want to delete this sale for ${saleToDelete.customer}? This will restore stock to inventory.`)) {
       if (saleToDelete.productName && saleToDelete.quantity) {
         try {
-          const cached = localStorage.getItem('spazex_inventory');
-          if (cached) {
-            let inventory = JSON.parse(cached);
-            inventory = inventory.map(p => {
-              if (p.name === saleToDelete.productName) {
-                return { ...p, stock: p.stock + saleToDelete.quantity };
-              }
-              return p;
-            });
-            localStorage.setItem('spazex_inventory', JSON.stringify(inventory));
-            window.dispatchEvent(new Event('spazex_inventory_updated'));
-          }
+          const cached = await api.getInventory();
+          const inventory = cached || [];
+          const updatedInventory = inventory.map(p => {
+            if (p.name === saleToDelete.productName) {
+              return { ...p, stock: p.stock + saleToDelete.quantity };
+            }
+            return p;
+          });
+          await api.saveInventory(updatedInventory);
         } catch (e) {
           console.error(e);
         }
+      }
+
+      try {
+        await api.removeSale(saleId);
+      } catch (e) {
+        console.error('Failed to delete sale', e);
       }
 
       setRows((prev) => prev.filter(r => r.id !== saleId));

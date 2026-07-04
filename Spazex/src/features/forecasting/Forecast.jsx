@@ -7,6 +7,7 @@ import ForecastTable from './components/ForecastTable';
 import ForecastSuggestions from './components/ForecastSuggestions';
 import { formatCurrency } from '../../utils/formatters';
 import WhatsAppFab from '../sales/components/WhatsAppFab';
+import { getInventory, getSales, saveInventory } from '../../services/api';
 import { FiTrendingUp, FiCpu, FiTrendingDown, FiCheckCircle } from 'react-icons/fi';
 
 const defaultHistory = [
@@ -29,29 +30,21 @@ const Forecast = () => {
   const [restockNotification, setRestockNotification] = useState('');
 
   // Load inventory and sales data
-  const loadData = () => {
+  const loadData = async () => {
     try {
-      const invCached = localStorage.getItem('spazex_inventory');
-      if (invCached) {
-        setInventory(JSON.parse(invCached));
-      } else {
-        // Fallback default inventory
-        const defaults = [
-          { id: 1, name: 'Blue Ribbon Bread', category: 'Bakery', stock: 45, price: 18.50 },
-          { id: 2, name: 'Coca-Cola 2L', category: 'Beverages', stock: 32, price: 22.00 },
-          { id: 3, name: 'Maize Meal 5kg', category: 'Grains', stock: 12, price: 45.00 },
-          { id: 4, name: 'Cooking Oil 2L', category: 'Cooking', stock: 8, price: 65.00 },
-          { id: 5, name: 'Sugar 2.5kg', category: 'Groceries', stock: 3, price: 35.00 }
-        ];
-        setInventory(defaults);
-      }
-
-      const salesCached = localStorage.getItem('salesRows');
-      if (salesCached) {
-        setSales(JSON.parse(salesCached));
-      }
+      const inv = await getInventory();
+      setInventory(inv || []);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to load inventory', e);
+      setInventory([]);
+    }
+
+    try {
+      const salesData = await getSales();
+      setSales(salesData || []);
+    } catch (e) {
+      console.error('Failed to load sales', e);
+      setSales([]);
     }
   };
 
@@ -72,27 +65,24 @@ const Forecast = () => {
   }, []);
 
   // One-click restock handler
-  const handleRestock = (productId, amount) => {
+  const handleRestock = async (productId, amount) => {
     if (amount <= 0) return;
     try {
-      const cached = localStorage.getItem('spazex_inventory');
-      let inv = cached ? JSON.parse(cached) : inventory;
+      const inv = await getInventory();
       let productName = '';
-      inv = inv.map(p => {
+      const updated = (inv || []).map(p => {
         if (p.id === productId) {
           productName = p.name;
           return { ...p, stock: p.stock + amount, lastUpdated: new Date().toISOString().split('T')[0] };
         }
         return p;
       });
-      localStorage.setItem('spazex_inventory', JSON.stringify(inv));
-      setInventory(inv);
-      window.dispatchEvent(new Event('spazex_inventory_updated'));
-
+      await saveInventory(updated);
+      setInventory(updated);
       setRestockNotification(`Successfully ordered and restocked ${amount} units of ${productName}!`);
       setTimeout(() => setRestockNotification(''), 4000);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to restock inventory', e);
     }
   };
 
