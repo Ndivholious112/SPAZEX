@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
 
 const NewSale = ({ onAdd }) => {
   const [open, setOpen] = useState(false);
@@ -9,34 +10,24 @@ const NewSale = ({ onAdd }) => {
   const [status, setStatus] = useState('Paid');
   const [error, setError] = useState('');
 
-  // Load inventory from localStorage
+  // Load inventory from current user storage
   useEffect(() => {
-    if (open) {
-      setError('');
+    if (!open) return;
+    setError('');
+
+    const loadInventory = async () => {
       try {
-        const cached = localStorage.getItem('spazex_inventory');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          setProducts(parsed);
-          if (parsed.length > 0) {
-            setSelectedProductId(parsed[0].id.toString());
-          }
-        } else {
-          // fallback default products
-          const defaults = [
-            { id: 1, name: 'Blue Ribbon Bread', price: 18.50, stock: 45 },
-            { id: 2, name: 'Coca-Cola 2L', price: 22.00, stock: 32 },
-            { id: 3, name: 'Maize Meal 5kg', price: 45.00, stock: 12 },
-            { id: 4, name: 'Cooking Oil 2L', price: 65.00, stock: 8 },
-            { id: 5, name: 'Sugar 2.5kg', price: 35.00, stock: 3 }
-          ];
-          setProducts(defaults);
-          setSelectedProductId('1');
+        const items = await api.getInventory();
+        setProducts(items || []);
+        if (items && items.length > 0) {
+          setSelectedProductId(items[0].id.toString());
         }
       } catch (e) {
-        console.error(e);
+        console.error('Failed to load inventory for sale', e);
       }
-    }
+    };
+
+    loadInventory();
   }, [open]);
 
   const selectedProduct = products.find(p => p.id.toString() === selectedProductId);
@@ -59,20 +50,18 @@ const NewSale = ({ onAdd }) => {
       return;
     }
 
-    // Deduct stock in localStorage
+    // Deduct stock in user-scoped inventory storage
     try {
-      const cached = localStorage.getItem('spazex_inventory');
-      let inventory = cached ? JSON.parse(cached) : products;
-      inventory = inventory.map(p => {
+      const inventory = await api.getInventory();
+      const updatedInventory = (inventory || []).map(p => {
         if (p.id === selectedProduct.id) {
           return { ...p, stock: Math.max(0, p.stock - quantity) };
         }
         return p;
       });
-      localStorage.setItem('spazex_inventory', JSON.stringify(inventory));
-      window.dispatchEvent(new Event('spazex_inventory_updated'));
+      await api.saveInventory(updatedInventory);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to update inventory after sale', e);
     }
 
     onAdd && onAdd({

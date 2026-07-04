@@ -41,14 +41,14 @@ const AICoach = () => {
     let userDetails = null;
 
     try {
-      const invStr = localStorage.getItem('spazex_inventory');
+      const invStr = localStorage.getItem(`spazex_inventory_${JSON.parse(localStorage.getItem('spazex_user') || 'null')?.uid}`);
       if (invStr) inventory = JSON.parse(invStr);
     } catch (e) {
       console.error('Error reading inventory from localStorage:', e);
     }
 
     try {
-      const salesStr = localStorage.getItem('salesRows');
+      const salesStr = localStorage.getItem(`spazex_sales_${JSON.parse(localStorage.getItem('spazex_user') || 'null')?.uid}`);
       if (salesStr) sales = JSON.parse(salesStr);
     } catch (e) {
       console.error('Error reading sales from localStorage:', e);

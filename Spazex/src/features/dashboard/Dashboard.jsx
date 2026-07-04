@@ -362,7 +362,6 @@ const Dashboard = () => {
               +14%
             </span>
           </div>
-          <p className="mt-4 text-xs text-gray-400">Daily spaza sales across maize, noodles, milk and beans.</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
@@ -376,7 +375,6 @@ const Dashboard = () => {
               Live
             </span>
           </div>
-          <p className="mt-4 text-xs text-gray-400">Orders being fulfilled from the spaza counter and takeaway window.</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
@@ -390,7 +388,6 @@ const Dashboard = () => {
               Urgent
             </span>
           </div>
-          <p className="mt-4 text-xs text-gray-400">Maize meal, soap and tea running low — restock the shelves quickly.</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200">
@@ -404,7 +401,6 @@ const Dashboard = () => {
               Solid
             </span>
           </div>
-          <p className="mt-4 text-xs text-gray-400">Strong margin on everyday essentials for the neighborhood shop.</p>
         </div>
       </div>
 
