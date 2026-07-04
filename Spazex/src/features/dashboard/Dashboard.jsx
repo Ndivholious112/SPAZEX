@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiCheck, FiCreditCard, FiDollarSign, FiArrowUpRight, FiPackage, FiAlertTriangle, FiShield, FiImage } from 'react-icons/fi';
 import useInventory from '../../hooks/useInventory';
 import useSales from '../../hooks/useSales';
@@ -101,6 +102,7 @@ const renderProductImage = (product, size = 'large') => {
 };
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
@@ -172,6 +174,14 @@ const Dashboard = () => {
     return Math.max(0, cash - finalTotal);
   }, [cashReceived, finalTotal, paymentMethod]);
 
+  // Save sales to localStorage
+  const saveSalesToLocalStorage = (salesData) => {
+    if (user && user.uid) {
+      const storedKey = `spazex_sales_${user.uid}`;
+      localStorage.setItem(storedKey, JSON.stringify(salesData));
+    }
+  };
+
   const handleCheckout = () => {
     if (paymentMethod === 'cash') {
       const cash = parseFloat(cashReceived) || 0;
@@ -183,12 +193,55 @@ const Dashboard = () => {
 
     (async () => {
       try {
+        const today = new Date().toISOString().split('T')[0];
         const saleRecord = {
           items: cartItems,
           total: finalTotal,
           paymentMethod,
+          customer: 'Walk-in Customer',
+          date: today,
+          timestamp: new Date().toISOString()
         };
+        
         const sale = await addSale(saleRecord);
+        
+        // Create individual sale records for each item and save to localStorage
+        const createdSales = [];
+        for (let i = 0; i < cartItems.length; i++) {
+          const item = cartItems[i];
+          const saleItem = {
+            id: Date.now() + i,
+            date: today,
+            order: `#SPZ${String(Date.now()).slice(-4)}${String(i + 1).padStart(2, '0')}`,
+            customer: 'Walk-in Customer',
+            productName: item.name || 'Unknown Product',
+            quantity: item.qty || 1,
+            price: item.price || 0,
+            amount: (item.qty || 1) * (item.price || 0),
+            total: finalTotal,
+            status: paymentMethod === 'cash' ? 'Pending' : 'Paid',
+            paymentMethod: paymentMethod || 'card',
+            userId: user?.uid || 'unknown',
+            userEmail: user?.email || '',
+            shopName: user?.shopName || user?.displayName || 'My Shop',
+            timestamp: new Date().toISOString()
+          };
+          createdSales.push(saleItem);
+        }
+        
+        // Save to localStorage - THIS IS THE KEY FIX
+        saveSalesToLocalStorage(createdSales);
+        
+        // Also save each item to API
+        for (const item of createdSales) {
+          try {
+            await api.addSale(item);
+          } catch (e) {
+            console.error('Failed to save sale to API:', e);
+          }
+        }
+        
+        // Update inventory
         for (const it of cartItems) {
           const inv = inventory.find((i) => i.id === it.id);
           if (inv) {
@@ -196,6 +249,7 @@ const Dashboard = () => {
             await updateInventoryItem(inv.id, { stock: newStock });
           }
         }
+        
         try {
           const createdInv = await api.addInvoice({
             saleRef: sale.id,

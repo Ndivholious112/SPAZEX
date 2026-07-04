@@ -23,7 +23,8 @@ import {
   FiMoreVertical,
   FiCamera,
   FiUpload,
-  FiInfo
+  FiInfo,
+  FiTrendingDown
 } from 'react-icons/fi';
 
 // Import products data from JSON file
@@ -56,6 +57,7 @@ const Inventory = () => {
     category: '',
     stock: 0,
     price: 0,
+    costPrice: 0,
     supplier: '',
     image: null
   });
@@ -132,7 +134,9 @@ const Inventory = () => {
     const product = {
       ...newProduct,
       image: image,
-      lastUpdated: new Date().toISOString().split('T')[0]
+      lastUpdated: new Date().toISOString().split('T')[0],
+      // Ensure costPrice is set, default to price if not provided
+      costPrice: newProduct.costPrice || newProduct.price * 0.7 // Default 70% of selling price
     };
     await add(product);
     setShowAddModal(false);
@@ -155,7 +159,7 @@ const Inventory = () => {
     const changes = { 
       ...updatedProduct, 
       image: image,
-      lastUpdated: new Date().toISOString().split('T')[0] 
+      lastUpdated: new Date().toISOString().split('T')[0]
     };
     await update(updatedProduct.id, changes);
     setShowEditModal(false);
@@ -198,6 +202,7 @@ const Inventory = () => {
       category: product.category,
       stock: product.stock,
       price: product.price,
+      costPrice: product.costPrice || product.price * 0.7,
       supplier: product.supplier || '',
       image: product.image || null
     });
@@ -229,6 +234,7 @@ const Inventory = () => {
       category: '',
       stock: 0,
       price: 0,
+      costPrice: 0,
       supplier: '',
       image: null
     });
@@ -242,7 +248,7 @@ const Inventory = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'stock' || name === 'price' ? parseFloat(value) || 0 : value
+      [name]: name === 'stock' || name === 'price' || name === 'costPrice' ? parseFloat(value) || 0 : value
     }));
   };
 
@@ -292,6 +298,12 @@ const Inventory = () => {
 
   const toggleMobileMenu = (id) => {
     setMobileMenuOpen(mobileMenuOpen === id ? null : id);
+  };
+
+  // Calculate profit margin
+  const calculateProfitMargin = (price, costPrice) => {
+    if (!costPrice || costPrice === 0) return null;
+    return ((price - costPrice) / price) * 100;
   };
 
   // Status configuration with proper icons
@@ -353,6 +365,22 @@ const Inventory = () => {
       });
     }
     
+    // Low profit margin items
+    const lowMarginItems = inventory.filter(item => {
+      if (!item.costPrice || item.costPrice === 0) return false;
+      const margin = ((item.price - item.costPrice) / item.price) * 100;
+      return margin < 20;
+    });
+    if (lowMarginItems.length > 0) {
+      recommendations.push({
+        type: 'margin',
+        icon: FiTrendingDown,
+        iconColor: 'text-red-400',
+        title: 'Low Margin Alert',
+        description: `${lowMarginItems.slice(0, 2).map(i => i.name).join(' • ')} have margins below 20%. Consider price review.`
+      });
+    }
+    
     const highDemandItems = inventory.filter(item => item.stock > 30);
     if (highDemandItems.length > 0) {
       recommendations.push({
@@ -402,6 +430,8 @@ const Inventory = () => {
   const lowStockItems = inventory.filter(item => item.stock <= 15).length;
   const criticalStockItems = inventory.filter(item => item.stock <= 5).length;
   const totalValue = inventory.reduce((sum, item) => sum + (item.stock * item.price), 0);
+  const totalCostValue = inventory.reduce((sum, item) => sum + (item.stock * (item.costPrice || item.price * 0.7)), 0);
+  const potentialProfit = totalValue - totalCostValue;
 
   // Helper function to get initials from product name
   const getInitials = (name) => {
@@ -550,6 +580,22 @@ const Inventory = () => {
     </div>
   );
 
+  // Profit Margin Badge Component
+  const ProfitMarginBadge = ({ price, costPrice }) => {
+    if (!costPrice || costPrice === 0) return null;
+    const margin = ((price - costPrice) / price) * 100;
+    
+    let color = 'bg-green-100 text-green-700';
+    if (margin < 20) color = 'bg-red-100 text-red-700';
+    else if (margin < 35) color = 'bg-yellow-100 text-yellow-700';
+    
+    return (
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${color}`}>
+        {margin.toFixed(0)}%
+      </span>
+    );
+  };
+
   return (
     <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       {/* Consistent Header */}
@@ -609,11 +655,11 @@ const Inventory = () => {
           <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Total Value</p>
-                <p className="text-sm sm:text-2xl font-bold text-green-600 truncate">R{totalValue.toFixed(2)}</p>
+                <p className="text-xs sm:text-sm text-gray-500">Potential Profit</p>
+                <p className="text-sm sm:text-2xl font-bold text-green-600 truncate">R{potentialProfit.toFixed(2)}</p>
               </div>
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
-                <FiDollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
+                <FiTrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </div>
           </div>
@@ -676,6 +722,8 @@ const Inventory = () => {
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Cost</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Margin</th>
                       <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -703,6 +751,12 @@ const Inventory = () => {
                           </td>
                           <td className="px-4 sm:px-6 py-3 sm:py-4">
                             <span className="text-sm font-medium text-gray-800">R{item.price.toFixed(2)}</span>
+                          </td>
+                          <td className="px-4 sm:px-6 py-3 sm:py-4">
+                            <span className="text-sm text-gray-500">R{(item.costPrice || item.price * 0.7).toFixed(2)}</span>
+                          </td>
+                          <td className="px-4 sm:px-6 py-3 sm:py-4">
+                            <ProfitMarginBadge price={item.price} costPrice={item.costPrice} />
                           </td>
                           <td className="px-4 sm:px-6 py-3 sm:py-4">
                             <span className={`inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
@@ -775,6 +829,7 @@ const Inventory = () => {
                               <StatusIcon className={`w-3 h-3 ${status.iconColor}`} />
                               {status.label}
                             </span>
+                            <ProfitMarginBadge price={item.price} costPrice={item.costPrice} />
                           </div>
                         </div>
                       </div>
@@ -1020,6 +1075,22 @@ const Inventory = () => {
                 </div>
               </div>
               
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cost Price (R) *</label>
+                <input
+                  type="number"
+                  name="costPrice"
+                  min="0"
+                  step="0.01"
+                  value={formData.costPrice}
+                  onChange={handleFormChange}
+                  className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all text-sm sm:text-base"
+                  placeholder="What you paid"
+                  required
+                />
+                <p className="text-xs text-gray-400 mt-1">The price you paid to purchase this product</p>
+              </div>
+              
               {/* Image Upload Section */}
               <ImageUploadSection 
                 preview={imagePreview}
@@ -1122,7 +1193,7 @@ const Inventory = () => {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Stock *</label>
                   <input
@@ -1136,7 +1207,7 @@ const Inventory = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (R) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (R)</label>
                   <input
                     type="number"
                     name="price"
@@ -1145,7 +1216,18 @@ const Inventory = () => {
                     value={formData.price}
                     onChange={handleFormChange}
                     className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all text-sm sm:text-base"
-                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cost (R)</label>
+                  <input
+                    type="number"
+                    name="costPrice"
+                    min="0"
+                    step="0.01"
+                    value={formData.costPrice}
+                    onChange={handleFormChange}
+                    className="w-full p-2.5 sm:p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all text-sm sm:text-base"
                   />
                 </div>
               </div>
