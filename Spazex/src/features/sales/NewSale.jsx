@@ -35,7 +35,8 @@ const NewSale = ({ onAdd }) => {
   const stock = selectedProduct ? selectedProduct.stock : 0;
   const totalAmount = (price * quantity).toFixed(2);
 
-  const submit = (e) => {
+  // Added 'async' right here to allow the use of 'await' inside the submit flow
+  const submit = async (e) => {
     e.preventDefault();
     if (!selectedProduct) {
       setError('Please select a product.');
