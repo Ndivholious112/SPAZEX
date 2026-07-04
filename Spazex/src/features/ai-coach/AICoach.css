@@ -1,0 +1,58 @@
+.ai-coach-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.ai-coach-hero {
+  margin-bottom: 2rem;
+}
+
+.ai-coach-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.ai-coach-subtitle {
+  margin-top: 0.5rem;
+  color: #64748b;
+}
+
+.ai-coach-status {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #6b76ee;
+}
+
+.ai-coach-badge {
+  margin-top: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+  background: #f4f8ff;
+  color: #4f46e5;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.ai-coach-badge-dot {
+  height: 0.7rem;
+  width: 0.7rem;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.ai-coach-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1.4fr 0.8fr;
+}
+
+@media (max-width: 1024px) {
+  .ai-coach-grid {
+    grid-template-columns: 1fr;
+  }
+}
