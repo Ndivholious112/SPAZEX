@@ -468,6 +468,7 @@ const Inventory = () => {
                   <tbody className="divide-y divide-gray-100">
                     {filteredInventory.map((item) => {
                       const status = getStockStatus(item.stock);
+                      const StatusIcon = status.icon;
                       return (
                         <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4">
@@ -486,10 +487,10 @@ const Inventory = () => {
                             <span className="text-sm font-medium text-gray-800">R{item.price.toFixed(2)}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
-                              <status.icon className={`w-3.5 h-3.5 ${status.iconColor}`} />
-                              {status.label}
-                            </span>
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
+                                <StatusIcon className={`w-3.5 h-3.5 ${status.iconColor}`} />
+                                {status.label}
+                              </span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center justify-end gap-2">
@@ -549,15 +550,18 @@ const Inventory = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                {getAIRecommendations().map((rec, index) => (
-                  <div key={index} className="bg-white/10 p-4 rounded-2xl border border-white/5 hover:bg-white/15 transition-all duration-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <rec.icon className={`w-5 h-5 ${rec.iconColor}`} />
-                      <p className="text-sm font-semibold text-white">{rec.title}</p>
+                {getAIRecommendations().map((rec, index) => {
+                  const RecIcon = rec.icon;
+                  return (
+                    <div key={index} className="bg-white/10 p-4 rounded-2xl border border-white/5 hover:bg-white/15 transition-all duration-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <RecIcon className={`w-5 h-5 ${rec.iconColor}`} />
+                        <p className="text-sm font-semibold text-white">{rec.title}</p>
+                      </div>
+                      <p className="text-sm text-gray-300 mt-1">{rec.description}</p>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">{rec.description}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

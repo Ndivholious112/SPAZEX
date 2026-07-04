@@ -180,15 +180,18 @@ const Problem = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {problems.map((problem, index) => (
-            <div key={index} className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:border-red-200 transition-colors group">
-              <div className={`w-14 h-14 ${problem.bg} rounded-xl flex items-center justify-center ${problem.color} mb-6 group-hover:scale-110 transition-transform`}>
-                <problem.icon className="w-7 h-7" />
+          {problems.map((problem, index) => {
+            const Icon = problem.icon;
+            return (
+              <div key={index} className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:border-red-200 transition-colors group">
+                <div className={`w-14 h-14 ${problem.bg} rounded-xl flex items-center justify-center ${problem.color} mb-6 group-hover:scale-110 transition-transform`}>
+                  <Icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{problem.title}</h3>
+                <p className="text-gray-600">{problem.description}</p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{problem.title}</h3>
-              <p className="text-gray-600">{problem.description}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -243,23 +246,26 @@ const Features = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {features.map((feature, index) => (
-            <div key={index} className="bg-white p-8 rounded-3xl border border-[#C4D9FF]/30 shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className={`w-14 h-14 ${feature.bg} rounded-2xl flex items-center justify-center ${feature.color} mb-6`}>
-                <feature.icon className="w-7 h-7" />
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div key={index} className="bg-white p-8 rounded-3xl border border-[#C4D9FF]/30 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className={`w-14 h-14 ${feature.bg} rounded-2xl flex items-center justify-center ${feature.color} mb-6`}>
+                  <Icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 mb-4">{feature.description}</p>
+                <ul className="space-y-2 text-sm text-gray-500 font-medium">
+                  {feature.bullets.map((bullet, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <FiCheck className="w-4 h-4 text-green-500" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-              <p className="text-gray-600 mb-4">{feature.description}</p>
-              <ul className="space-y-2 text-sm text-gray-500 font-medium">
-                {feature.bullets.map((bullet, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <FiCheck className="w-4 h-4 text-green-500" />
-                    {bullet}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

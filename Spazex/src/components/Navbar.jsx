@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX, FiUser, FiLogOut, FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings } from 'react-icons/fi';
+import { FiMenu, FiX, FiUser, FiLogOut, FiHome, FiPackage, FiTrendingUp, FiBarChart2, FiCpu, FiTruck, FiSettings, FiFileText } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
@@ -33,6 +33,7 @@ const Navbar = () => {
   const authenticatedNavItems = [
     { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
     { path: '/inventory', icon: FiPackage, label: 'Products' },
+    { path: '/invoices', icon: FiFileText, label: 'Invoices' },
     { path: '/ai-coach', icon: FiCpu, label: 'AI Coach' },
     { path: '/suppliers', icon: FiTruck, label: 'Suppliers' },
   ];
@@ -172,17 +173,20 @@ const Navbar = () => {
           )}
 
           {/* Navigation Links */}
-          {navItems.map((item) => (
-            <Link 
-              key={item.path}
-              to={item.path} 
-              className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-              onClick={closeMobileMenu}
-            >
-              {item.icon && <item.icon className="w-5 h-5" />}
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const ItemIcon = item.icon;
+            return (
+              <Link 
+                key={item.path}
+                to={item.path} 
+                className="flex items-center gap-3 text-gray-600 hover:text-blue-600 font-medium px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                {item.icon && <ItemIcon className="w-5 h-5" />}
+                {item.label}
+              </Link>
+            );
+          })}
 
           {/* Analytics group for mobile */}
           <div>
