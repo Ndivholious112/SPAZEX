@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "Albany Brown Bread",
+    "brand": "Albany",
+    "category": "Bread",
+    "image": "/images/Albany Bread-Brown.png"
+  },
+  {
+    "id": 2,
+    "name": "Albany White Bread",
+    "brand": "Albany",
+    "category": "Bread",
+    "image": "/images/Albany Bread-white.webp"
+  },
+  {
+    "id": 3,
+    "name": "Coke 2L",
+    "brand": "Coca Cola",
+    "category": "Soft Drinks",
+    "image": "/images/Coke2L.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Eggs (30 Pack)",
+    "brand": "Generic",
+    "category": "Dairy & Eggs",
+    "image": "/images/eggsbox30dz.png"
+  },
+  {
+    "id": 5,
+    "name": "White Star Maize Meal 10kg",
+    "brand": "White Star",
+    "category": "Maize Meal",
+    "image": "/images/WHITE-STAR-MAIZE-MEAL-10kg.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Sunflower Cooking Oil 2L",
+    "brand": "Sunflower",
+    "category": "Cooking",
+    "image": "/images/sunflower-oil.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Selati Sugar 2.5kg",
+    "brand": "Selati",
+    "category": "Groceries",
+    "image": "/images/selati-sugar.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Ace Maize Meal 5kg",
+    "brand": "Ace",
+    "category": "Maize Meal",
+    "image": "/images/ace-maize-meal.jpg"
+  }
+]
