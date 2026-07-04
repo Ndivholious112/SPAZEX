@@ -393,3 +393,44 @@ h1, h2, h3, h4 {
 .dark .text-green-500 {
   color: #4ade80;
 }
+
+/* ===== GLOBAL RESPONSIVE WRAPPER & HELPERS ===== */
+.app-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px; /* mobile default */
+}
+
+/* Small devices (phones) */
+@media (max-width: 639px) {
+  .app-inner {
+    padding: 12px;
+  }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .app-inner {
+    padding: 20px;
+  }
+}
+
+/* Large devices (desktop) */
+@media (min-width: 1024px) {
+  .app-inner {
+    padding: 32px;
+  }
+}
+
+/* Utility: stack cards on small screens */
+.stack-on-mobile {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .stack-on-mobile {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}

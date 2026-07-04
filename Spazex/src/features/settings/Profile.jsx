@@ -90,14 +90,14 @@ const Profile = () => {
       {/* Profile Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 border border-gray-100">
         {/* Avatar Section */}
-        <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-100">
-          <div className="w-24 h-24 bg-gradient-to-r from-[#C4D9FF] to-[#C5BAFE] rounded-full flex items-center justify-center text-3xl font-bold text-gray-800">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 pb-8 border-b border-gray-100">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-[#C4D9FF] to-[#C5BAFE] rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold text-gray-800">
             {formData.displayName?.[0]?.toUpperCase() || 'U'}
           </div>
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-lg font-semibold text-gray-800">Profile Photo</h3>
             <p className="text-sm text-gray-500 mt-1">Upload a new photo or change your avatar</p>
-            <button type="button" className="mt-2 text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors">
+            <button type="button" className="mt-3 inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
               Change Photo
             </button>
           </div>
@@ -134,9 +134,10 @@ const Profile = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#C4D9FF] transition-all disabled:cursor-not-allowed disabled:opacity-80"
                 placeholder="Enter your email"
                 disabled
+                readOnly
               />
             </div>
             <p className="mt-1 text-xs text-gray-400">Email cannot be changed</p>
@@ -181,7 +182,7 @@ const Profile = () => {
               Shop Address
             </label>
             <div className="relative">
-              <FiMapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+              <FiMapPin className="absolute left-3 top-6 text-gray-400 w-5 h-5" />
               <textarea
                 name="address"
                 value={formData.address}
